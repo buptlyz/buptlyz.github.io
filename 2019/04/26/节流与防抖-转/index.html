@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="节流防抖 debounce有两种防抖模式：  延迟执行 立即执行  应用场景 输入搜索 - 延迟执行 点击按钮搜索 - 立即执行  输入搜索输入框中实时键入文本搜索，适合延迟执行。用户在输入完整的搜索内容后，会停止一段时间，这时候发起搜索行为。 需求：  监听到用户开始输入后，并不马上执行，等一段时间后再执行 等待时间中，有新的输入事件，重置计时器  12345678910111213141516">
+<meta name="keywords" content="Github Page Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="节流与防抖(转)">
+<meta property="og:url" content="https://buptlyz.github.io/2019/04/26/节流与防抖-转/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="节流防抖 debounce有两种防抖模式：  延迟执行 立即执行  应用场景 输入搜索 - 延迟执行 点击按钮搜索 - 立即执行  输入搜索输入框中实时键入文本搜索，适合延迟执行。用户在输入完整的搜索内容后，会停止一段时间，这时候发起搜索行为。 需求：  监听到用户开始输入后，并不马上执行，等一段时间后再执行 等待时间中，有新的输入事件，重置计时器  12345678910111213141516">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.926Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="节流与防抖(转)">
+<meta name="twitter:description" content="节流防抖 debounce有两种防抖模式：  延迟执行 立即执行  应用场景 输入搜索 - 延迟执行 点击按钮搜索 - 立即执行  输入搜索输入框中实时键入文本搜索，适合延迟执行。用户在输入完整的搜索内容后，会停止一段时间，这时候发起搜索行为。 需求：  监听到用户开始输入后，并不马上执行，等一段时间后再执行 等待时间中，有新的输入事件，重置计时器  12345678910111213141516">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/04/26/节流与防抖-转/">
+
+
+
+
+
+  <title>节流与防抖(转) | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/04/26/节流与防抖-转/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">节流与防抖(转)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-26T16:43:51+08:00">
+                2019-04-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://terry-su.github.io/cn/understand-and-make-the-throttle/" target="_blank" rel="noopener">节流</a><br><a href="https://terry-su.github.io/cn/understand-and-make-the-debounce/" target="_blank" rel="noopener">防抖</a></p>
+<h2 id="debounce"><a href="#debounce" class="headerlink" title="debounce"></a>debounce</h2><p>有两种防抖模式：</p>
+<ul>
+<li>延迟执行</li>
+<li>立即执行</li>
+</ul>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><ul>
+<li>输入搜索 - 延迟执行</li>
+<li>点击按钮搜索 - 立即执行</li>
+</ul>
+<h4 id="输入搜索"><a href="#输入搜索" class="headerlink" title="输入搜索"></a>输入搜索</h4><p>输入框中实时键入文本搜索，适合延迟执行。用户在输入完整的搜索内容后，会停止一段时间，这时候发起搜索行为。</p>
+<p>需求：</p>
+<ol>
+<li>监听到用户开始输入后，并不马上执行，等一段时间后再执行</li>
+<li>等待时间中，有新的输入事件，重置计时器</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * start--&gt; A&#123;计时器是否为空&#125;</span></span><br><span class="line"><span class="comment"> * A--&gt; |是| B(添加计时器：过了 等待时间 后，执行函数并清除计时器)</span></span><br><span class="line"><span class="comment"> * A--&gt; |否| C(重置计时器)</span></span><br><span class="line"><span class="comment"> * B--&gt; 结束</span></span><br><span class="line"><span class="comment"> * @param &#123;Function&#125; func</span></span><br><span class="line"><span class="comment"> * @param &#123;Integer&#125; wait 毫秒</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">debounce</span>(<span class="params">func, wait = <span class="number">0</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> func !== <span class="string">'function'</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'debounce传入的参数必须是函数'</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> timer = <span class="literal">null</span>, curThis = <span class="literal">null</span>, curArgs = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">invokeFunc</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    func.apply(curThis, curArgs);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">clearTimer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    clearTimeout(timer);</span><br><span class="line">    timer = <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">addTimer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    timer = setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      invokeFunc();</span><br><span class="line">      clearTimer();</span><br><span class="line">    &#125;, wait)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">resetTimer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    clearTimer();</span><br><span class="line">    addTimer();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">debounced</span>(<span class="params">...args</span>) </span>&#123;</span><br><span class="line">    curThis = <span class="keyword">this</span>;</span><br><span class="line">    curArgs = args;</span><br><span class="line">    <span class="keyword">if</span> (timer) &#123;</span><br><span class="line">      resetTimer();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      addTimer();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> debounced;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="点击搜索"><a href="#点击搜索" class="headerlink" title="点击搜索"></a>点击搜索</h4><p>用户点击搜索按钮，立即执行搜索，并启动定时器，一段时间后清除定时器。一段时间内多次点击，只执行一次，忽略后面的行为，并重置定时器。</p>
+<p>需求</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * start--&gt; IF1&#123;计时器是否为空&#125;</span></span><br><span class="line"><span class="comment"> * IF1--&gt; |是| A(执行搜索)</span></span><br><span class="line"><span class="comment"> * A--&gt; B(添加定时器：过了 等待时间 后清除定时器)</span></span><br><span class="line"><span class="comment"> * IF1--&gt; |否| C(清除定时器)</span></span><br><span class="line"><span class="comment"> * C--&gt; B</span></span><br><span class="line"><span class="comment"> * B--&gt; 结束</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">debounce</span>(<span class="params">func, wait = <span class="number">0</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> func !== <span class="string">'function'</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">'debounce传入的参数必须是函数'</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> timer = <span class="literal">null</span>, curThis = <span class="literal">null</span>, curArgs = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">addTimer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    timer = setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      clearTimer();</span><br><span class="line">    &#125;, wait)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">clearTimer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    clearTimeout(timer);</span><br><span class="line">    timer = <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">invokeFunc</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    func.apply(curThis, curArgs);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">debounced</span>(<span class="params">...args</span>) </span>&#123;</span><br><span class="line">    curThis = <span class="keyword">this</span>;</span><br><span class="line">    curArgs = args;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (timer) &#123;</span><br><span class="line">      clearTimer();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      invokeFunc();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    addTimer();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> debounced;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="节流"><a href="#节流" class="headerlink" title="节流"></a>节流</h2><p>频繁触发的事件，事件处理函数在一定的时间间隔内只执行一次。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * start--&gt; IF1&#123;timer is null?&#125;</span></span><br><span class="line"><span class="comment"> * IF1--&gt; |Yes| A(invoke callback)</span></span><br><span class="line"><span class="comment"> * A--&gt; B(add timer, remove timer after wait ms)</span></span><br><span class="line"><span class="comment"> * B--&gt; end</span></span><br><span class="line"><span class="comment"> * IF1---&gt; |No| end</span></span><br><span class="line"><span class="comment"> * @param &#123;Function&#125; func</span></span><br><span class="line"><span class="comment"> * @param &#123;Integer&#125; wait ms</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">throttle</span>(<span class="params">func, wait</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> timer = <span class="literal">null</span>, curThis = <span class="literal">null</span>, curArgs = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">invokeFunc</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    func.apply(curThis, curArgs);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">addTimer</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    timer = setTimout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      clearTimeout(timer);</span><br><span class="line">      timer = <span class="literal">null</span>;</span><br><span class="line">    &#125;, wait);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">throttled</span>(<span class="params">...args</span>) </span>&#123;</span><br><span class="line">    curThis = <span class="keyword">this</span>;</span><br><span class="line">    curArgs = args;</span><br><span class="line">    <span class="keyword">if</span> (timer) &#123;</span><br><span class="line">      invokeFunc();</span><br><span class="line">      addTimer();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> throttled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>节流和防抖类似，都能有效优化系统性能，不过使用业务场景有所区别：</p>
+<ul>
+<li>防抖既可用于在多次触发的事件（如文本框输入），也可用于频繁触发的事件（如滚动条）</li>
+<li>节流只用在频繁触发的事件上</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/26/Node-js-12发布！快来看看有哪些新动向吧/" rel="next" title="Node.js 12发布！快来看看有哪些新动向吧(转)">
+                <i class="fa fa-chevron-left"></i> Node.js 12发布！快来看看有哪些新动向吧(转)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/26/揭开redux和react-redux的神秘面纱/" rel="prev" title="揭开redux和react-redux的神秘面纱(转)">
+                揭开redux和react-redux的神秘面纱(转) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#debounce"><span class="nav-number">1.</span> <span class="nav-text">debounce</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景"><span class="nav-number">1.1.</span> <span class="nav-text">应用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#输入搜索"><span class="nav-number">1.1.1.</span> <span class="nav-text">输入搜索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#点击搜索"><span class="nav-number">1.1.2.</span> <span class="nav-text">点击搜索</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#节流"><span class="nav-number">2.</span> <span class="nav-text">节流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

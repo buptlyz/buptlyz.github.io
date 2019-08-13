@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文链接官方参考writing-a-loader 首先我们来看一下为什么需要loader，以及它能干什么?webpack 只能理解 JavaScript 和 JSON 文件。loader 让 webpack 能够去处理其他类型的文件，并将它们转换为有效模块，以供应用程序使用，以及被添加到依赖图中。 本质上来说，loader 就是一个 node 模块，这很符合 webpack 中「万物皆模块」的思路">
+<meta name="keywords" content="Github Page Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手把手教你写一个Webpack Loader(转)">
+<meta property="og:url" content="https://buptlyz.github.io/2019/04/26/手把手教你写一个Webpack-Loader-转/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="原文链接官方参考writing-a-loader 首先我们来看一下为什么需要loader，以及它能干什么?webpack 只能理解 JavaScript 和 JSON 文件。loader 让 webpack 能够去处理其他类型的文件，并将它们转换为有效模块，以供应用程序使用，以及被添加到依赖图中。 本质上来说，loader 就是一个 node 模块，这很符合 webpack 中「万物皆模块」的思路">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://image-static.segmentfault.com/416/401/4164017475-5cc06632a147b_articlex">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.923Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手把手教你写一个Webpack Loader(转)">
+<meta name="twitter:description" content="原文链接官方参考writing-a-loader 首先我们来看一下为什么需要loader，以及它能干什么?webpack 只能理解 JavaScript 和 JSON 文件。loader 让 webpack 能够去处理其他类型的文件，并将它们转换为有效模块，以供应用程序使用，以及被添加到依赖图中。 本质上来说，loader 就是一个 node 模块，这很符合 webpack 中「万物皆模块」的思路">
+<meta name="twitter:image" content="https://image-static.segmentfault.com/416/401/4164017475-5cc06632a147b_articlex">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/04/26/手把手教你写一个Webpack-Loader-转/">
+
+
+
+
+
+  <title>手把手教你写一个Webpack Loader(转) | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/04/26/手把手教你写一个Webpack-Loader-转/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">手把手教你写一个Webpack Loader(转)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-26T11:42:15+08:00">
+                2019-04-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://segmentfault.com/a/1190000018980814" target="_blank" rel="noopener">原文链接</a><br><a href="https://webpack.js.org/contribute/writing-a-loader" target="_blank" rel="noopener">官方参考writing-a-loader</a></p>
+<p>首先我们来看一下为什么需要<code>loader</code>，以及它能干什么?<br>webpack 只能理解 JavaScript 和 JSON 文件。<code>loader</code> 让 webpack 能够去处理其他类型的文件，并将它们转换为有效模块，以供应用程序使用，以及被添加到依赖图中。</p>
+<p>本质上来说，<code>loader</code> 就是一个 node 模块，这很符合 webpack 中「万物皆模块」的思路。既然是 node 模块，那就一定会导出点什么。在 webpack 的定义中，<code>loader</code> 导出一个函数，<code>loader</code> 会在转换源模块resource的时候调用该函数。在这个函数内部，我们可以通过传入 <code>this</code> 上下文给 <code>Loader API</code> 来使用它们。最终装换成可以直接引用的模块。</p>
+<h2 id="xml-loader实现"><a href="#xml-loader实现" class="headerlink" title="xml-loader实现"></a><code>xml-loader</code>实现</h2><p>前面我们已经知道，由于 Webpack 是运行在 Node.js 之上的，一个 <code>Loader</code> 其实就是一个 Node.js 模块，这个模块需要导出一个函数。 这个导出的函数的工作就是获得处理前的原内容，对原内容执行处理后，返回处理后的内容。<br>一个简单的<code>loader</code>源码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span>(<span class="params">source</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// source 为 compiler 传递给 `Loader` 的一个文件的原内容</span></span><br><span class="line">  <span class="comment">// 该函数需要返回处理后的内容，这里简单起见，直接把原内容返回了，相当于该 `Loader` 没有做任何转换</span></span><br><span class="line">  <span class="keyword">return</span> source;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>由于 <code>Loader</code> 运行在 Node.js 中，你可以调用任何 Node.js 自带的 API，或者安装第三方模块进行调用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> xml2js = <span class="built_in">require</span>(<span class="string">'xml2js'</span>);</span><br><span class="line"><span class="keyword">const</span> parser = <span class="keyword">new</span> xml2js.Parser();</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports =  <span class="function"><span class="keyword">function</span>(<span class="params">source</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.cacheable &amp;&amp; <span class="keyword">this</span>.cacheable();</span><br><span class="line">  <span class="keyword">const</span> self = <span class="keyword">this</span>;</span><br><span class="line">  parser.parseString(source, <span class="function"><span class="keyword">function</span> (<span class="params">err, result</span>) </span>&#123;</span><br><span class="line">    self.callback(err, !err &amp;&amp; <span class="string">"module.exports = "</span> + <span class="built_in">JSON</span>.stringify(result));</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这里我们事简单实现一个<code>xml-loader</code>;</p>
+<p>注意：如果是处理顺序排在最后一个的 <code>loader</code>，那么它的返回值将最终交给 webpack 的 <code>require</code>，换句话说，它一定是一段可执行的 JS 脚本 （用字符串来存储），更准确来说，是一个 node 模块的 JS 脚本，所以我们需要用<code>module.exports =</code>导出。<br>整个过程相当于这个 <code>loader</code> 把源文件</p>
+<pre><code>// 这里是 source 模块
+</code></pre><p>转化为</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// example.js</span></span><br><span class="line"><span class="built_in">module</span>.exports = <span class="string">'这里是 source 模块'</span>;</span><br></pre></td></tr></table></figure>
+<p>然后交给 require 调用方：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// applySomeModule.js</span></span><br><span class="line"><span class="keyword">var</span> source = <span class="built_in">require</span>(<span class="string">'example.js'</span>); </span><br><span class="line"><span class="built_in">console</span>.log(source); <span class="comment">// 这里是 source 模块</span></span><br></pre></td></tr></table></figure>
+<p>写完后我们要怎么在本地验证呢？下面我们来写个简单的demo进行验证。</p>
+<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>首先我们创建一个根目录<code>xml-loader</code>，此目录下 <code>npm init -y</code>生成默认的<code>package.json</code>文件 ,在文件中配置打包命令</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">"scripts": &#123;</span><br><span class="line">    "dev": "webpack-dev-server"</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+<p>之后<code>npm i -D webpack webpack-cli</code>,安装完webpack，在根目录 创建配置文件<code>webpack.config.js</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  entry: <span class="string">'./src/index.js'</span>,</span><br><span class="line">  output: &#123;</span><br><span class="line">    path: path.resolve(__dirname, <span class="string">'dist'</span>),</span><br><span class="line">    filename: <span class="string">'bundle.js'</span>,</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="built_in">module</span>: &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        test: <span class="regexp">/\.xml$/</span>,</span><br><span class="line">        use: [<span class="string">'xml-loader'</span>],</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  resolveLoader: &#123;</span><br><span class="line">    modules: [path.join(__dirname, <span class="string">'/src/loader'</span>)]</span><br><span class="line">  &#125;,</span><br><span class="line">  devServer: &#123;</span><br><span class="line">    contentBase: <span class="string">'./dist'</span>,</span><br><span class="line">    overlay: &#123;</span><br><span class="line">      warnings: <span class="literal">true</span>,</span><br><span class="line">      errors: <span class="literal">true</span></span><br><span class="line">    &#125;,</span><br><span class="line">    open: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在根目录创建一个<code>src</code>目录，里面创建<code>index.js</code>,</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> data <span class="keyword">from</span> <span class="string">'./foo.xml'</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">component</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> element = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</span><br><span class="line">  element.innerHTML = data.note.body;</span><br><span class="line">  element.classList.add(<span class="string">'header'</span>);</span><br><span class="line">  <span class="built_in">console</span>.log(data);</span><br><span class="line">  <span class="keyword">return</span> element;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.body.appendChild(component());</span><br></pre></td></tr></table></figure>
+<p>同时还有一个foo.xml文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">to</span>&gt;</span>Mary<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">from</span>&gt;</span>John<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder  dd<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span>Call Cindy on Tuesday dd<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>最后把上面的<code>xml-loader</code>放到<code>src/loader</code>文件夹下。<br>完整的<a href="https://github.com/xiangxingchen/blog/tree/master/src/webpack/demo06" target="_blank" rel="noopener">demo源码</a>请看<br>最终我们的运行效果如下图</p>
+<p><img src="https://image-static.segmentfault.com/416/401/4164017475-5cc06632a147b_articlex" alt="图片描述"></p>
+<p>至此一个简单的<code>webpack loader</code>就实现完成了。当然最终使用你可以发布到npm上。</p>
+<h2 id="一些议论知识补充"><a href="#一些议论知识补充" class="headerlink" title="一些议论知识补充"></a>一些议论知识补充</h2><h3 id="获得Loader的options"><a href="#获得Loader的options" class="headerlink" title="获得Loader的options"></a>获得<code>Loader</code>的<code>options</code></h3><p>当我们配置loader时我们经常会看到有这样的配置</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ules: [&#123;</span><br><span class="line">    test: <span class="regexp">/\.html$/</span>,</span><br><span class="line">    use: [ &#123;</span><br><span class="line">      loader: <span class="string">'html-loader'</span>,</span><br><span class="line">      options: &#123;</span><br><span class="line">        minimize: <span class="literal">true</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;],</span><br><span class="line">  &#125;]</span><br></pre></td></tr></table></figure>
+<p>那么我们在<code>loader</code>中怎么获取这写配置信息呢？答案是<code>loader-utils</code>。这个由webpack提供的工具。下面我们来看下使用方法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> loaderUtils = <span class="built_in">require</span>(<span class="string">'loader-utils'</span>);</span><br><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span>(<span class="params">source</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 获取到用户给当前 Loader 传入的 options</span></span><br><span class="line">  <span class="keyword">const</span> options = loaderUtils.getOptions(<span class="keyword">this</span>);</span><br><span class="line">  <span class="keyword">return</span> source;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>没错就是这么简单。</p>
+<h3 id="加载本地Loader"><a href="#加载本地Loader" class="headerlink" title="加载本地Loader"></a>加载本地<code>Loader</code></h3><h4 id="path-resolve"><a href="#path-resolve" class="headerlink" title="path.resolve"></a><code>path.resolve</code></h4><p>可以简单通过在 <code>rule</code> 对象设置 <code>path.resolve</code> 指向这个本地文件</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  test: <span class="regexp">/\.js$/</span></span><br><span class="line">  use: [</span><br><span class="line">    &#123;</span><br><span class="line">      loader: path.resolve(<span class="string">'path/to/loader.js'</span>),</span><br><span class="line">      options: &#123;<span class="comment">/* ... */</span>&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ResolveLoader"><a href="#ResolveLoader" class="headerlink" title="ResolveLoader"></a>ResolveLoader</h4><p>这个就是上面我用到的方法。<code>ResolveLoader</code> 用于配置 Webpack 如何寻找 <code>Loader</code>。 默认情况下只会去 <code>node_modules</code> 目录下寻找，为了让 Webpack 加载放在本地项目中的 <code>Loader</code> 需要修改 <code>resolveLoader.modules</code>。<br>假如本地的 <code>Loader</code> 在项目目录中的 <code>./loaders/loader-name</code> 中，则需要如下配置：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  resolveLoader:&#123;</span><br><span class="line">    <span class="comment">// 去哪些目录下寻找 Loader，有先后顺序之分</span></span><br><span class="line">    modules: [<span class="string">'node_modules'</span>,<span class="string">'./loaders/'</span>],</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>加上以上配置后， Webpack 会先去 <code>node_modules</code> 项目下寻找 <code>Loader</code>，如果找不到，会再去 <code>./loaders/</code> 目录下寻找。</p>
+<h4 id="npm-link"><a href="#npm-link" class="headerlink" title="npm link"></a><a href="https://docs.npmjs.com/cli/link" target="_blank" rel="noopener">npm link</a></h4><p><a href="https://docs.npmjs.com/cli/link" target="_blank" rel="noopener">npm link</a> 专门用于开发和调试本地 <code>npm</code> 模块，能做到在不发布模块的情况下，把本地的一个正在开发的模块的源码链接到项目的 <code>node_modules</code> 目录下，让项目可以直接使用本地的 <code>npm</code> 模块。 由于是通过软链接的方式实现的，编辑了本地的 <code>npm</code> 模块代码，在项目中也能使用到编辑后的代码。</p>
+<p>完成 <a href="https://docs.npmjs.com/cli/link" target="_blank" rel="noopener">npm link</a> 的步骤如下：</p>
+<ul>
+<li>确保正在开发的本地 <code>npm</code> 模块（也就是正在开发的 <code>Loader</code>）的 <code>package.json</code> 已经正确配置好；</li>
+<li>在本地 <code>npm</code> 模块根目录下执行 <a href="https://docs.npmjs.com/cli/link" target="_blank" rel="noopener">npm link</a>，把本地模块注册到全局；</li>
+<li>在项目根目录下执行 <a href="https://docs.npmjs.com/cli/link" target="_blank" rel="noopener">npm link</a> <code>loader-name</code>，把第2步注册到全局的本地 <code>npm</code> 模块链接到项目的 <code>node_moduels</code> 下，其中的 <code>loader-name</code> 是指在第1步中的<code>package.json</code> 文件中配置的模块名称。</li>
+</ul>
+<p>链接好 <code>Loader</code> 到项目后你就可以像使用一个真正的 <code>npm</code> 模块一样使用本地的 <code>Loader</code> 了。(<a href="https://docs.npmjs.com/cli/link" target="_blank" rel="noopener">npm link</a>不是很熟，复制被人的)</p>
+<h3 id="缓存加速"><a href="#缓存加速" class="headerlink" title="缓存加速"></a>缓存加速</h3><p>在有些情况下，有些转换操作需要大量计算非常耗时，如果每次构建都重新执行重复的转换操作，构建将会变得非常缓慢。 为此，Webpack 会默认缓存所有 <code>Loader</code> 的处理结果，也就是说在需要被处理的文件或者其依赖的文件没有发生变化时， 是不会重新调用对应的 <code>Loader</code> 去执行转换操作的。</p>
+<p>如果你想让 Webpack 不缓存该 <code>Loader</code> 的处理结果，可以这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span>(<span class="params">source</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 关闭该 Loader 的缓存功能</span></span><br><span class="line">  <span class="keyword">this</span>.cacheable(<span class="literal">false</span>);</span><br><span class="line">  <span class="keyword">return</span> source;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="处理二进制数据"><a href="#处理二进制数据" class="headerlink" title="处理二进制数据"></a>处理二进制数据</h3><p>在默认的情况下，Webpack 传给 <code>Loader</code> 的原内容都是 UTF-8 格式编码的字符串。 但有些场景下 <code>Loader</code> 不是处理文本文件，而是处理二进制文件，例如 <code>file-loader</code>，就需要 Webpack 给 <code>Loader</code> 传入二进制格式的数据。 为此，你需要这样编写 <code>Loader</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span>(<span class="params">source</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 在 exports.raw === true 时，Webpack 传给 Loader 的 source 是 Buffer 类型的</span></span><br><span class="line">    source <span class="keyword">instanceof</span> Buffer === <span class="literal">true</span>;</span><br><span class="line">    <span class="comment">// Loader 返回的类型也可以是 Buffer 类型的</span></span><br><span class="line">    <span class="comment">// 在 exports.raw !== true 时，Loader 也可以返回 Buffer 类型的结果</span></span><br><span class="line">    <span class="keyword">return</span> source;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 通过 exports.raw 属性告诉 Webpack 该 Loader 是否需要二进制数据 </span></span><br><span class="line"><span class="built_in">module</span>.exports.raw = <span class="literal">true</span>;</span><br></pre></td></tr></table></figure>
+<p>以上代码中最关键的代码是最后一行 <code>module.exports.raw = true;</code>，没有该行 <code>Loader</code> 只能拿到字符串。</p>
+<h3 id="同步与异步"><a href="#同步与异步" class="headerlink" title="同步与异步"></a>同步与异步</h3><p><code>Loader</code> 有同步和异步之分，上面介绍的 <code>Loader</code> 都是同步的 <code>Loader</code>，因为它们的转换流程都是同步的，转换完成后再返回结果。 但在有些场景下转换的步骤只能是异步完成的，例如你需要通过网络请求才能得出结果，如果采用同步的方式网络请求就会阻塞整个构建，导致构建非常缓慢。</p>
+<p>在转换步骤是异步时，你可以这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = <span class="function"><span class="keyword">function</span>(<span class="params">source</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 告诉 Webpack 本次转换是异步的，Loader 会在 callback 中回调结果</span></span><br><span class="line">    <span class="keyword">var</span> callback = <span class="keyword">this</span>.async();</span><br><span class="line">    someAsyncOperation(source, <span class="function"><span class="keyword">function</span>(<span class="params">err, result, sourceMaps, ast</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 通过 callback 返回异步执行后的结果</span></span><br><span class="line">        callback(err, result, sourceMaps, ast);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/25/2019前端开发手册/" rel="next" title="2019前端开发手册(转)">
+                <i class="fa fa-chevron-left"></i> 2019前端开发手册(转)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/26/Node-js-12发布！快来看看有哪些新动向吧/" rel="prev" title="Node.js 12发布！快来看看有哪些新动向吧(转)">
+                Node.js 12发布！快来看看有哪些新动向吧(转) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#xml-loader实现"><span class="nav-number">1.</span> <span class="nav-text">xml-loader实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证"><span class="nav-number">2.</span> <span class="nav-text">验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一些议论知识补充"><span class="nav-number">3.</span> <span class="nav-text">一些议论知识补充</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获得Loader的options"><span class="nav-number">3.1.</span> <span class="nav-text">获得Loader的options</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加载本地Loader"><span class="nav-number">3.2.</span> <span class="nav-text">加载本地Loader</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#path-resolve"><span class="nav-number">3.2.1.</span> <span class="nav-text">path.resolve</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ResolveLoader"><span class="nav-number">3.2.2.</span> <span class="nav-text">ResolveLoader</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#npm-link"><span class="nav-number">3.2.3.</span> <span class="nav-text">npm link</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存加速"><span class="nav-number">3.3.</span> <span class="nav-text">缓存加速</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理二进制数据"><span class="nav-number">3.4.</span> <span class="nav-text">处理二进制数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步与异步"><span class="nav-number">3.5.</span> <span class="nav-text">同步与异步</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

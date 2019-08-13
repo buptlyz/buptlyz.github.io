@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="同源策略及cookie,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址 最初，同源策略的含义是指，网页A设置的cookie，网页B不能打开，除非这两个网页“同源”，如下：  协议相同 域名相同 端口相同  举例来说，http://www.example.com/dir/page.html的同源情况如下：  http://www.example.com/dir2/other.html：同源 http://example.com/dir/other.html：不">
+<meta name="keywords" content="同源策略及cookie">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器同源政策及其规避方法(转)">
+<meta property="og:url" content="https://buptlyz.github.io/2019/04/25/浏览器同源政策及其规避方法-转/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="原文地址 最初，同源策略的含义是指，网页A设置的cookie，网页B不能打开，除非这两个网页“同源”，如下：  协议相同 域名相同 端口相同  举例来说，http://www.example.com/dir/page.html的同源情况如下：  http://www.example.com/dir2/other.html：同源 http://example.com/dir/other.html：不">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.924Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浏览器同源政策及其规避方法(转)">
+<meta name="twitter:description" content="原文地址 最初，同源策略的含义是指，网页A设置的cookie，网页B不能打开，除非这两个网页“同源”，如下：  协议相同 域名相同 端口相同  举例来说，http://www.example.com/dir/page.html的同源情况如下：  http://www.example.com/dir2/other.html：同源 http://example.com/dir/other.html：不">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/04/25/浏览器同源政策及其规避方法-转/">
+
+
+
+
+
+  <title>浏览器同源政策及其规避方法(转) | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/04/25/浏览器同源政策及其规避方法-转/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浏览器同源政策及其规避方法(转)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-25T11:23:19+08:00">
+                2019-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" target="_blank" rel="noopener">原文地址</a></p>
+<p>最初，<em>同源策略</em>的含义是指，网页A设置的cookie，网页B不能打开，除非这两个网页“同源”，如下：</p>
+<ul>
+<li>协议相同</li>
+<li>域名相同</li>
+<li>端口相同</li>
+</ul>
+<p>举例来说，<code>http://www.example.com/dir/page.html</code>的同源情况如下：</p>
+<ul>
+<li><code>http://www.example.com/dir2/other.html</code>：同源</li>
+<li><code>http://example.com/dir/other.html</code>：不同源（域名不同）</li>
+<li><code>http://v2.www.example.com/dir/other.html</code>：不同源（域名不同）</li>
+<li><code>http://www.example.com:81/dir/other.html</code>：不同源（端口不同）</li>
+</ul>
+<p><em>同源策略</em>的目的是为了保证用户信息的安全，防止恶意的网站窃取数据。</p>
+<p>随着互联网的发展，<em>同源策略</em>越来越严格，目前共有三种行为收到限制：</p>
+<ol>
+<li>Cookie、LocalStorage和IndexedDB无法读取；</li>
+<li>DOM无法获得；</li>
+<li>AJAX请求不能发送。</li>
+</ol>
+<h2 id="如何规避"><a href="#如何规避" class="headerlink" title="如何规避"></a>如何规避</h2><h3 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a><code>Cookie</code></h3><p>Cookie是服务器写入浏览器的一小段信息，只有同源的网页才能共享。但是，两个网页一级域名相同，只是二级域名不同，浏览器允许通过设置<code>document.domain</code>共享<code>cookie</code>。</p>
+<p>举例来说，网页A是<code>http://w1.example.com/a.html</code>，网页B是<code>http://w2.example.com/b.html</code>。那么只要设置相同的<code>document.domain</code>，两个网页就可以共享<code>cookie</code>。</p>
+<p>注意，这种方法只适用于<code>cookie</code>和<code>iframe</code>窗口，<code>LocalStorage</code>和<code>IndexedDB</code>是不行的，而要使用<code>PostMessage</code>API。</p>
+<p>此外，服务器可以在设置<code>cookie</code>的时候，指定<code>cookie</code>所属域名为一级域名，比如<code>.example.com</code>，这样，二级域名和三级域名不用做任何设置，都可以读取这个<code>cookie</code>。</p>
+<h3 id="iframe"><a href="#iframe" class="headerlink" title="iframe"></a><code>iframe</code></h3><p>如果两个网页不同源，就无法拿到对方的DOM。典型的例子是<code>iframe</code>和<code>window.open()</code>打开的窗口与父窗口无法通信。</p>
+<p>如果两个窗口一级域名相同，只是二级域名不同，那么设置<code>document.domain</code>属性就可以。</p>
+<p>对于完全不同源的网站，目前有三种方法：</p>
+<ul>
+<li>片段识别符（fragment identifier）</li>
+<li>window.name</li>
+<li>跨文档通信API（cross-document messageing）</li>
+</ul>
+<h4 id="片段识别符"><a href="#片段识别符" class="headerlink" title="片段识别符"></a>片段识别符</h4><p>片段识别符（fragment identifier）是指URL的<code>#</code>后面的部分，如果只是改变片段标识符，页面不会重新刷新。</p>
+<p>父窗口可以把信息写入子窗口的片段标识符，子窗口监听<code>hashchange</code>事件得到通知。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 父</span></span><br><span class="line"><span class="keyword">const</span> src = <span class="string">`<span class="subst">$&#123;originURL&#125;</span>#<span class="subst">$&#123;data&#125;</span>`</span>;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">'myIframe'</span>).src = src;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 子</span></span><br><span class="line"><span class="built_in">window</span>.onhashchange = checkMessage;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkMessage</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> message = <span class="built_in">window</span>.location.hash;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 子窗口也可以改变父窗口的片段标识符</span></span><br><span class="line">parent.location.href = <span class="string">`<span class="subst">$&#123;target&#125;</span>#<span class="subst">$&#123;hash&#125;</span>`</span>;</span><br></pre></td></tr></table></figure>
+<h4 id="window-name"><a href="#window-name" class="headerlink" title="window.name"></a><code>window.name</code></h4><p>无论是否同源，只要在一个窗口里，前一个网页设置的<code>window.name</code>，后一个网页就可以读取它。</p>
+<p>优点是容量大，可以放置很长的字符串；缺点是必须监听属性变化的事件，影响性能。</p>
+<h4 id="postMessage"><a href="#postMessage" class="headerlink" title="postMessage"></a><code>postMessage</code></h4><p>HTML5提供了跨文档通信API（Cross-document messaging）<code>postMessage</code>，允许跨窗口通信，不论这两个窗口是否同源。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 父窗口向子窗口</span></span><br><span class="line"><span class="keyword">const</span> popup = <span class="built_in">window</span>.open(<span class="string">'http://b.com'</span>, <span class="string">'title'</span>);</span><br><span class="line">popup.postMessage(<span class="string">'hello'</span>, <span class="string">'http://b.com'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 子窗口向父窗口</span></span><br><span class="line"><span class="built_in">window</span>.opener.postMessage(<span class="string">'hello'</span>, <span class="string">'http://a.com'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接收数据</span></span><br><span class="line"><span class="built_in">window</span>.addEventListener(<span class="string">'message'</span>, (e) =&gt; <span class="built_in">console</span>.log(e.data), <span class="literal">false</span>);</span><br></pre></td></tr></table></figure>
+<p><code>event</code>对象的三个属性：</p>
+<ul>
+<li><code>event.source</code>：发送消息的窗口</li>
+<li><code>event.origin</code>：消息发向的网址</li>
+<li><code>event.data</code>：消息内容</li>
+</ul>
+<h4 id="LocalStorage"><a href="#LocalStorage" class="headerlink" title="LocalStorage"></a><code>LocalStorage</code></h4><p>通过<code>window.postMessage</code>可以读写其他窗口的<code>LocalStorage</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 子窗口接收父窗口消息</span></span><br><span class="line"><span class="built_in">window</span>.onmessage = <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (e.origin !== <span class="string">'http://bbb.com'</span>) <span class="keyword">return</span>;</span><br><span class="line">  <span class="keyword">const</span> payload = <span class="built_in">JSON</span>.parse(e.data);</span><br><span class="line">  <span class="keyword">switch</span> (payload.method) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'set'</span>:</span><br><span class="line">      localStorage.setItem(payload.key, <span class="built_in">JSON</span>.stringify(payload.data));</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'get'</span>:</span><br><span class="line">      <span class="keyword">const</span> parent = <span class="built_in">window</span>.parent;</span><br><span class="line">      <span class="keyword">const</span> data = localStorage.getItem(payload.key);</span><br><span class="line">      parent.postMessage(data, <span class="string">'http://aaa.com'</span>);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'remove'</span>:</span><br><span class="line">      localStorage.removeItem(payload.key);</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 父窗口发消息</span></span><br><span class="line"><span class="keyword">const</span> win = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'iframe'</span>)[<span class="number">0</span>].contentWindow;</span><br><span class="line"><span class="keyword">const</span> obj = &#123; <span class="attr">name</span>: <span class="string">'Jack'</span> &#125;;</span><br><span class="line"><span class="comment">// 存入对象</span></span><br><span class="line">win.postMessage(<span class="built_in">JSON</span>.stringify(&#123;<span class="attr">key</span>: <span class="string">'storage'</span>, <span class="attr">method</span>: <span class="string">'set'</span>, <span class="attr">data</span>: obj&#125;), <span class="string">'http://bbb.com'</span>);</span><br><span class="line"><span class="comment">// 读取对象</span></span><br><span class="line">win.postMessage(<span class="built_in">JSON</span>.stringify(&#123;<span class="attr">key</span>: <span class="string">'storage'</span>, <span class="attr">method</span>: <span class="string">"get"</span>&#125;), <span class="string">"*"</span>);</span><br><span class="line"><span class="built_in">window</span>.onmessage = <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (e.origin != <span class="string">'http://aaa.com'</span>) <span class="keyword">return</span>;</span><br><span class="line">  <span class="comment">// "Jack"</span></span><br><span class="line">  <span class="built_in">console</span>.log(<span class="built_in">JSON</span>.parse(e.data).name);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="AJAX"><a href="#AJAX" class="headerlink" title="AJAX"></a>AJAX</h3><p>AJAX请求只能发给同源网址，有三种方法规避这个限制：</p>
+<ul>
+<li>JSONP</li>
+<li>WebSocket</li>
+<li>CORS</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/同源策略及cookie/" rel="tag"># 同源策略及cookie</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/24/提及-实现-转/" rel="next" title="@提及 实现(转)">
+                <i class="fa fa-chevron-left"></i> @提及 实现(转)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/25/聊聊cookie-转/" rel="prev" title="聊聊cookie(转)">
+                聊聊cookie(转) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何规避"><span class="nav-number">1.</span> <span class="nav-text">如何规避</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cookie"><span class="nav-number">1.1.</span> <span class="nav-text">Cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iframe"><span class="nav-number">1.2.</span> <span class="nav-text">iframe</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#片段识别符"><span class="nav-number">1.2.1.</span> <span class="nav-text">片段识别符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#window-name"><span class="nav-number">1.2.2.</span> <span class="nav-text">window.name</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#postMessage"><span class="nav-number">1.2.3.</span> <span class="nav-text">postMessage</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LocalStorage"><span class="nav-number">1.2.4.</span> <span class="nav-text">LocalStorage</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AJAX"><span class="nav-number">1.3.</span> <span class="nav-text">AJAX</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

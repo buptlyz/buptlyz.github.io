@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="函数式编程,functional programming,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1.1 什么是函数式编程函数式编程的目标是使用函数来抽象作用在数据智商的控制流与操作，从而在系统中消除副作用并减少对状态的改变。 1.2 函数式编程是声明式编程函数式编程属于声明式编程范式：这种范式会描述一系列的操作，但并不会暴露它们是如何实现的或是数据流如何穿过它们。 目前，更加主流的是命令式的或过程式的编程范式，如Java、C#、C++和其它大多数结构化语言和面向对象语言都对其提供支持。 命令">
+<meta name="keywords" content="函数式编程,functional programming">
+<meta property="og:type" content="article">
+<meta property="og:title" content="函数式编程第一章——走近函数式">
+<meta property="og:url" content="https://buptlyz.github.io/2019/05/17/函数式编程第一章——走近函数式/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="1.1 什么是函数式编程函数式编程的目标是使用函数来抽象作用在数据智商的控制流与操作，从而在系统中消除副作用并减少对状态的改变。 1.2 函数式编程是声明式编程函数式编程属于声明式编程范式：这种范式会描述一系列的操作，但并不会暴露它们是如何实现的或是数据流如何穿过它们。 目前，更加主流的是命令式的或过程式的编程范式，如Java、C#、C++和其它大多数结构化语言和面向对象语言都对其提供支持。 命令">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.920Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="函数式编程第一章——走近函数式">
+<meta name="twitter:description" content="1.1 什么是函数式编程函数式编程的目标是使用函数来抽象作用在数据智商的控制流与操作，从而在系统中消除副作用并减少对状态的改变。 1.2 函数式编程是声明式编程函数式编程属于声明式编程范式：这种范式会描述一系列的操作，但并不会暴露它们是如何实现的或是数据流如何穿过它们。 目前，更加主流的是命令式的或过程式的编程范式，如Java、C#、C++和其它大多数结构化语言和面向对象语言都对其提供支持。 命令">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/05/17/函数式编程第一章——走近函数式/">
+
+
+
+
+
+  <title>函数式编程第一章——走近函数式 | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/05/17/函数式编程第一章——走近函数式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">函数式编程第一章——走近函数式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-17T21:22:48+08:00">
+                2019-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-1-什么是函数式编程"><a href="#1-1-什么是函数式编程" class="headerlink" title="1.1 什么是函数式编程"></a>1.1 什么是函数式编程</h2><p>函数式编程的目标是使用函数来<strong>抽象作用在数据智商的控制流与操作</strong>，从而在系统中<strong>消除副作用</strong>并<strong>减少对状态的改变</strong>。</p>
+<h2 id="1-2-函数式编程是声明式编程"><a href="#1-2-函数式编程是声明式编程" class="headerlink" title="1.2 函数式编程是声明式编程"></a>1.2 函数式编程是声明式编程</h2><p>函数式编程属于<strong>声明式</strong>编程范式：这种范式会描述一系列的操作，但并不会暴露它们是如何实现的或是数据流如何穿过它们。</p>
+<p>目前，更加主流的是<strong>命令式</strong>的或<strong>过程式</strong>的编程范式，如Java、C#、C++和其它大多数结构化语言和面向对象语言都对其提供支持。</p>
+<p><strong>命令式</strong>编程将计算机程序视为一系列自上而下的断言，通过修改系统的各个状态来计算最终的结果。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 命令式具体告诉计算机如何执行某个任务</span></span><br><span class="line"><span class="keyword">var</span> array = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; array.length; i++) &#123;</span><br><span class="line">  array[i] = <span class="built_in">Math</span>.pow(array[i], <span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line">array; <span class="comment">// -&gt; [0, 1, 4, 9, ...]</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明式将程序的描述与求值分离开来</span></span><br><span class="line"><span class="comment">// 它关注于如何用各种表达式来描述程序逻辑，而不一定要指明其控制流或状态的变化</span></span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>].map(</span><br><span class="line">  <span class="function"><span class="keyword">function</span>(<span class="params">num</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">Math</span>.pow(num, <span class="number">2</span>);</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="副作用带来的问题和纯函数"><a href="#副作用带来的问题和纯函数" class="headerlink" title="副作用带来的问题和纯函数"></a>副作用带来的问题和纯函数</h3><p>函数式编程基于一个前提，即使用纯函数构建具有不变性的程序。纯函数的性质：</p>
+<ul>
+<li>仅取决于提供的输入，而不依赖于任何在函数求值期间或调用间隔时可能变化的隐藏状态和外部状态</li>
+<li>不会造成超出其作用域的变化，例如修改全局对象或引用传递的参数</li>
+</ul>
+<p>副作用：</p>
+<ul>
+<li>改变一个全局的变量、属性或数据结构</li>
+<li>改变一个函数参数的原始值</li>
+<li>处理用户输入</li>
+<li>抛出一个异常，除非它又被当前函数捕获了</li>
+<li>屏幕打印或记录日志</li>
+<li>查询HTML文档、浏览器的cookie或访问数据库</li>
+</ul>
+<h3 id="引用透明和可置换性"><a href="#引用透明和可置换性" class="headerlink" title="引用透明和可置换性"></a>引用透明和可置换性</h3><p>如果一个函数对于相同的输入始终产生相同的结果，那么就说它是<strong>引用透明</strong>的。</p>
+<p>构建这样的程序更容易推理，因为可以在心中形成一个状态系统的模型，并通过<strong>重写</strong>或<strong>替换</strong>来达到期望的输出。</p>
+<h3 id="存储不可变数据"><a href="#存储不可变数据" class="headerlink" title="存储不可变数据"></a>存储不可变数据</h3><p>函数式编程是指为创建不可变的程序，通过消除外部可见的副作用，来对纯函数的声明式的求职过程。</p>
+<h2 id="1-3-函数式编程的优点"><a href="#1-3-函数式编程的优点" class="headerlink" title="1.3 函数式编程的优点"></a>1.3 函数式编程的优点</h2><ul>
+<li>促使将任务<strong>分解</strong>成简单的函数</li>
+<li>使用<strong>流式</strong>的调用链来处理数据</li>
+<li>通过<strong>响应式范式</strong>降低事件驱动代码的复杂性</li>
+</ul>
+<h3 id="鼓励复杂任务的分解"><a href="#鼓励复杂任务的分解" class="headerlink" title="鼓励复杂任务的分解"></a>鼓励复杂任务的分解</h3><p>宏观上将，函数式编程实际上是分解和组合之间的相互作用。</p>
+<p>函数式编程的模块化概念与<strong>单一职责</strong>原则息息相关，也就是说，函数都应该拥有单一的目的。</p>
+<h3 id="使用流式链来处理数据"><a href="#使用流式链来处理数据" class="headerlink" title="使用流式链来处理数据"></a>使用流式链来处理数据</h3><p>函数链是一种<strong>惰性计算</strong>程序。这意味着当需要时才会执行。</p>
+<h3 id="复杂异步应用中的响应"><a href="#复杂异步应用中的响应" class="headerlink" title="复杂异步应用中的响应"></a>复杂异步应用中的响应</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Rx.js 函数式响应式编程FRP</span></span><br><span class="line">Rx.Observable.fromEvent(<span class="built_in">document</span>.querySelector(<span class="string">'#student-ssn'</span>), <span class="string">'keyup'</span>)</span><br><span class="line">  .map(<span class="function"><span class="params">input</span> =&gt;</span> input.srcElement.value)</span><br><span class="line">  .filter(<span class="function"><span class="params">ssn</span> =&gt;</span> ssn !== <span class="literal">null</span> &amp;&amp; ssn.length !== <span class="number">0</span>)</span><br><span class="line">  .map(<span class="function"><span class="params">ssn</span> =&gt;</span> ssn.replace(<span class="regexp">/^\s*|\s*$|\-/g</span>, <span class="string">''</span>))</span><br><span class="line">  .skipWhile(<span class="function"><span class="params">ssn</span> =&gt;</span> ssn.length !== <span class="number">9</span>)</span><br><span class="line">  .subscribe(</span><br><span class="line">    validSSN =&gt; <span class="built_in">console</span>.log(<span class="string">`Valid SSN <span class="subst">$&#123;validSSN&#125;</span>`</span>)</span><br><span class="line">  );</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/函数式编程/" rel="tag"># 函数式编程</a>
+          
+            <a href="/tags/functional-programming/" rel="tag"># functional programming</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/17/tasks-microtasks-queues-and-schedules/" rel="next" title="tasks-microtasks-queues-and-schedules">
+                <i class="fa fa-chevron-left"></i> tasks-microtasks-queues-and-schedules
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/17/函数式编程第二章——高阶JavaScript/" rel="prev" title="函数式编程第二章——高阶JavaScript">
+                函数式编程第二章——高阶JavaScript <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-什么是函数式编程"><span class="nav-number">1.</span> <span class="nav-text">1.1 什么是函数式编程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-函数式编程是声明式编程"><span class="nav-number">2.</span> <span class="nav-text">1.2 函数式编程是声明式编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#副作用带来的问题和纯函数"><span class="nav-number">2.1.</span> <span class="nav-text">副作用带来的问题和纯函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引用透明和可置换性"><span class="nav-number">2.2.</span> <span class="nav-text">引用透明和可置换性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储不可变数据"><span class="nav-number">2.3.</span> <span class="nav-text">存储不可变数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-函数式编程的优点"><span class="nav-number">3.</span> <span class="nav-text">1.3 函数式编程的优点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#鼓励复杂任务的分解"><span class="nav-number">3.1.</span> <span class="nav-text">鼓励复杂任务的分解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用流式链来处理数据"><span class="nav-number">3.2.</span> <span class="nav-text">使用流式链来处理数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#复杂异步应用中的响应"><span class="nav-number">3.3.</span> <span class="nav-text">复杂异步应用中的响应</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

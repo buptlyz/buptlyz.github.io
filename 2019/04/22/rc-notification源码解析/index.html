@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="rc-component,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="github地址示例地址 Notification1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192">
+<meta name="keywords" content="rc-component">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rc-notification源码解析">
+<meta property="og:url" content="https://buptlyz.github.io/2019/04/22/rc-notification源码解析/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="github地址示例地址 Notification1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.916Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="rc-notification源码解析">
+<meta name="twitter:description" content="github地址示例地址 Notification1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/04/22/rc-notification源码解析/">
+
+
+
+
+
+  <title>rc-notification源码解析 | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/04/22/rc-notification源码解析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">rc-notification源码解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-22T22:57:22+08:00">
+                2019-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://github.com/react-component/notification" target="_blank" rel="noopener">github地址</a><br><a href="http://react-component.github.io/notification/examples/simple.html" target="_blank" rel="noopener">示例地址</a></p>
+<h2 id="Notification"><a href="#Notification" class="headerlink" title="Notification"></a><a href="https://github.com/react-component/notification/blob/master/src/Notification.jsx" target="_blank" rel="noopener">Notification</a></h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> PropTypes <span class="keyword">from</span> <span class="string">'prop-types'</span>;</span><br><span class="line"><span class="keyword">import</span> ReactDOM <span class="keyword">from</span> <span class="string">'react-dom'</span>;</span><br><span class="line"><span class="keyword">import</span> Animate <span class="keyword">from</span> <span class="string">'rc-animate'</span>;</span><br><span class="line"><span class="keyword">import</span> createChainedFunction <span class="keyword">from</span> <span class="string">'rc-util/lib/createChainedFunction'</span>;</span><br><span class="line"><span class="keyword">import</span> classnames <span class="keyword">from</span> <span class="string">'classnames'</span>;</span><br><span class="line"><span class="keyword">import</span> Notice <span class="keyword">from</span> <span class="string">'./Notice'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用来生成唯一标识符uuid</span></span><br><span class="line"><span class="keyword">let</span> seed = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">const</span> now = <span class="built_in">Date</span>.now();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getUuid</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="string">`rcNotification_<span class="subst">$&#123;now&#125;</span>_<span class="subst">$&#123;seed++&#125;</span>`</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Notification -&gt; Animate -&gt; Notices</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Notification</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> propTypes = &#123;</span><br><span class="line">    prefixCls: PropTypes.string,</span><br><span class="line">    transitionName: PropTypes.string,</span><br><span class="line">    animation: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),</span><br><span class="line">    style: PropTypes.object,</span><br><span class="line">    maxCount: PropTypes.number,</span><br><span class="line">    closeIcon: PropTypes.node,</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> defaultProps = &#123;</span><br><span class="line">    prefixCls: <span class="string">'rc-notification'</span>,</span><br><span class="line">    animation: <span class="string">'fade'</span>,</span><br><span class="line">    style: &#123;</span><br><span class="line">      top: <span class="number">65</span>,</span><br><span class="line">      left: <span class="string">'50%'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  state = &#123;</span><br><span class="line">    notices: [],</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// transitionName</span></span><br><span class="line">  getTransitionName() &#123;</span><br><span class="line">    <span class="keyword">const</span> props = <span class="keyword">this</span>.props;</span><br><span class="line">    <span class="keyword">let</span> transitionName = props.transitionName;</span><br><span class="line">    <span class="keyword">if</span> (!transitionName &amp;&amp; props.animation) &#123;</span><br><span class="line">      transitionName = <span class="string">`<span class="subst">$&#123;props.prefixCls&#125;</span>-<span class="subst">$&#123;props.animation&#125;</span>`</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> transitionName;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 添加notice</span></span><br><span class="line">  add = <span class="function">(<span class="params">notice</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> key = notice.key = notice.key || getUuid();</span><br><span class="line">    <span class="keyword">const</span> &#123; maxCount &#125; = <span class="keyword">this</span>.props;</span><br><span class="line">    <span class="keyword">this</span>.setState(<span class="function"><span class="params">previousState</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> notices = previousState.notices;</span><br><span class="line">      <span class="keyword">const</span> noticeIndex = notices.map(<span class="function"><span class="params">v</span> =&gt;</span> v.key).indexOf(key);</span><br><span class="line">      <span class="keyword">const</span> updatedNotices = notices.concat();</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 已存在key值相同的notice，则用新的替换旧的</span></span><br><span class="line">      <span class="keyword">if</span> (noticeIndex !== <span class="number">-1</span>) &#123;</span><br><span class="line">        updatedNotices.splice(noticeIndex, <span class="number">1</span>, notice);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 超出notice的maxCount，则先删除第一个，再添加到队列末尾</span></span><br><span class="line">        <span class="comment">// 没有超出则直接添加到队列末尾</span></span><br><span class="line">        <span class="keyword">if</span> (maxCount &amp;&amp; notices.length &gt;= maxCount) &#123;</span><br><span class="line">          <span class="comment">// 使用第一项的key来更新新添加的项（让react移除现有的，而不是先删除再挂载）。</span></span><br><span class="line">          <span class="comment">// 复用旧的key值是为了：a) 外部人工控制；b)内部react的key属性不是很好用。</span></span><br><span class="line"></span><br><span class="line">          <span class="comment">// XXX, use key of first item to update new added (let React to move exsiting</span></span><br><span class="line">          <span class="comment">// instead of remove and mount). Same key was used before for both a) external</span></span><br><span class="line">          <span class="comment">// manual control and b) internal react 'key' prop , which is not that good.</span></span><br><span class="line">          notice.updateKey = updatedNotices[<span class="number">0</span>].updateKey || updatedNotices[<span class="number">0</span>].key;</span><br><span class="line">          updatedNotices.shift();</span><br><span class="line">        &#125;</span><br><span class="line">        updatedNotices.push(notice);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        notices: updatedNotices,</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 删除特定key的notice</span></span><br><span class="line">  remove = <span class="function">(<span class="params">key</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">this</span>.setState(<span class="function"><span class="params">previousState</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        notices: previousState.notices.filter(<span class="function"><span class="params">notice</span> =&gt;</span> notice.key !== key),</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> props = <span class="keyword">this</span>.props;</span><br><span class="line">    <span class="keyword">const</span> &#123; notices &#125; = <span class="keyword">this</span>.state;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// notice节点，每个notice对应一个Notice组件实例</span></span><br><span class="line">    <span class="keyword">const</span> noticeNodes = notices.map(<span class="function">(<span class="params">notice, index</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> update = <span class="built_in">Boolean</span>(index === notices.length - <span class="number">1</span> &amp;&amp; notice.updateKey);</span><br><span class="line">      <span class="keyword">const</span> key = notice.updateKey ? notice.updateKey : notice.key;</span><br><span class="line">      <span class="keyword">const</span> onClose = createChainedFunction(<span class="keyword">this</span>.remove.bind(<span class="keyword">this</span>, notice.key), notice.onClose);</span><br><span class="line">      <span class="keyword">return</span> (&lt;Notice</span><br><span class="line">        prefixCls=&#123;props.prefixCls&#125;</span><br><span class="line">        &#123;...notice&#125;</span><br><span class="line">        key=&#123;key&#125;</span><br><span class="line">        update=&#123;update&#125;</span><br><span class="line">        onClose=&#123;onClose&#125;</span><br><span class="line">        onClick=&#123;notice.onClick&#125;</span><br><span class="line">        closeIcon=&#123;props.closeIcon&#125;</span><br><span class="line">      &gt;</span><br><span class="line">        &#123;notice.content&#125;</span><br><span class="line">      &lt;/Notice&gt;);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">const</span> className = &#123;</span><br><span class="line">      [props.prefixCls]: <span class="number">1</span>,</span><br><span class="line">      [props.className]: !!props.className,</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=&#123;classnames(className)&#125; style=&#123;props.style&#125;&gt;</span><br><span class="line">        &lt;Animate transitionName=&#123;<span class="keyword">this</span>.getTransitionName()&#125;&gt;&#123;noticeNodes&#125;&lt;<span class="regexp">/Animate&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 静态方法，创建Notification实例</span></span><br><span class="line">Notification.newInstance = <span class="function"><span class="keyword">function</span> <span class="title">newNotificationInstance</span>(<span class="params">properties, callback</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// getContainer是Notification instance的容器，最终append到body里</span></span><br><span class="line">  <span class="keyword">const</span> &#123; getContainer, ...props &#125; = properties || &#123;&#125;;</span><br><span class="line">  <span class="keyword">const</span> div = <span class="built_in">document</span>.createElement(<span class="string">'div'</span>);</span><br><span class="line">  <span class="keyword">if</span> (getContainer) &#123;</span><br><span class="line">    <span class="keyword">const</span> root = getContainer();</span><br><span class="line">    root.appendChild(div);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="built_in">document</span>.body.appendChild(div);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">let</span> called = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 拿到notification的ref</span></span><br><span class="line">  <span class="comment">// 包装成&#123;notice, removeNotice, destroy, component&#125;，并传给callback</span></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">ref</span>(<span class="params">notification</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (called) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    called = <span class="literal">true</span>;</span><br><span class="line">    callback(&#123;</span><br><span class="line">      notice(noticeProps) &#123;</span><br><span class="line">        notification.add(noticeProps);</span><br><span class="line">      &#125;,</span><br><span class="line">      removeNotice(key) &#123;</span><br><span class="line">        notification.remove(key);</span><br><span class="line">      &#125;,</span><br><span class="line">      component: notification,</span><br><span class="line">      destroy() &#123;</span><br><span class="line">        ReactDOM.unmountComponentAtNode(div);</span><br><span class="line">        div.parentNode.removeChild(div);</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  ReactDOM.render(&lt;Notification &#123;...props&#125; ref=&#123;ref&#125; /&gt;, div);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">export default Notification;</span><br></pre></td></tr></table></figure>
+<h2 id="Notice"><a href="#Notice" class="headerlink" title="Notice"></a><a href="https://github.com/react-component/notification/blob/master/src/Notice.jsx" target="_blank" rel="noopener">Notice</a></h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React, &#123; Component &#125; <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> classNames <span class="keyword">from</span> <span class="string">'classnames'</span>;</span><br><span class="line"><span class="keyword">import</span> PropTypes <span class="keyword">from</span> <span class="string">'prop-types'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment">* 1. 展示notice内容，关闭icon</span></span><br><span class="line"><span class="comment">* 2. 点击事件、关闭事件</span></span><br><span class="line"><span class="comment">* 3. 持续时间后调用`props.onClose()`</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Notice</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> propTypes = &#123;</span><br><span class="line">    duration: PropTypes.number,</span><br><span class="line">    onClose: PropTypes.func,</span><br><span class="line">    children: PropTypes.any,</span><br><span class="line">    update: PropTypes.bool,</span><br><span class="line">    closeIcon: PropTypes.node,</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">static</span> defaultProps = &#123;</span><br><span class="line">    onEnd() &#123;</span><br><span class="line">    &#125;,</span><br><span class="line">    onClose() &#123;</span><br><span class="line">    &#125;,</span><br><span class="line">    duration: <span class="number">1.5</span>,</span><br><span class="line">    style: &#123;</span><br><span class="line">      right: <span class="string">'50%'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  componentDidMount() &#123;</span><br><span class="line">    <span class="keyword">this</span>.startCloseTimer();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  componentDidUpdate(prevProps) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.props.duration !== prevProps.duration</span><br><span class="line">      || <span class="keyword">this</span>.props.update) &#123;</span><br><span class="line">      <span class="keyword">this</span>.restartCloseTimer();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  componentWillUnmount() &#123;</span><br><span class="line">    <span class="keyword">this</span>.clearCloseTimer();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  close = <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (e) &#123;</span><br><span class="line">      e.stopPropagation();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.clearCloseTimer();</span><br><span class="line">    <span class="keyword">this</span>.props.onClose();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  startCloseTimer = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.props.duration) &#123;</span><br><span class="line">      <span class="keyword">this</span>.closeTimer = setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.close();</span><br><span class="line">      &#125;, <span class="keyword">this</span>.props.duration * <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  clearCloseTimer = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.closeTimer) &#123;</span><br><span class="line">      clearTimeout(<span class="keyword">this</span>.closeTimer);</span><br><span class="line">      <span class="keyword">this</span>.closeTimer = <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  restartCloseTimer() &#123;</span><br><span class="line">    <span class="keyword">this</span>.clearCloseTimer();</span><br><span class="line">    <span class="keyword">this</span>.startCloseTimer();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> props = <span class="keyword">this</span>.props;</span><br><span class="line">    <span class="keyword">const</span> componentClass = <span class="string">`<span class="subst">$&#123;props.prefixCls&#125;</span>-notice`</span>;</span><br><span class="line">    <span class="keyword">const</span> className = &#123;</span><br><span class="line">      [<span class="string">`<span class="subst">$&#123;componentClass&#125;</span>`</span>]: <span class="number">1</span>,</span><br><span class="line">      [<span class="string">`<span class="subst">$&#123;componentClass&#125;</span>-closable`</span>]: props.closable,</span><br><span class="line">      [props.className]: !!props.className,</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div</span><br><span class="line">        className=&#123;classNames(className)&#125;</span><br><span class="line">        style=&#123;props.style&#125;</span><br><span class="line">        onMouseEnter=&#123;<span class="keyword">this</span>.clearCloseTimer&#125;</span><br><span class="line">        onMouseLeave=&#123;<span class="keyword">this</span>.startCloseTimer&#125;</span><br><span class="line">        onClick=&#123;props.onClick&#125;</span><br><span class="line">      &gt;</span><br><span class="line">        &lt;div className=&#123;<span class="string">`<span class="subst">$&#123;componentClass&#125;</span>-content`</span>&#125;&gt;&#123;props.children&#125;&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">          &#123;props.closable ?</span></span><br><span class="line"><span class="regexp">            &lt;a tabIndex="0" onClick=&#123;this.close&#125; className=&#123;`$&#123;componentClass&#125;-close`&#125;&gt;</span></span><br><span class="line"><span class="regexp">              &#123;props.closeIcon || &lt;span className=&#123;`$&#123;componentClass&#125;-close-x`&#125;/</span>&gt;&#125;</span><br><span class="line">            &lt;<span class="regexp">/a&gt; : null</span></span><br><span class="line"><span class="regexp">          &#125;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* eslint-disable no-console */</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">'rc-notification/assets/index.css'</span>;</span><br><span class="line"><span class="keyword">import</span> Notification <span class="keyword">from</span> <span class="string">'rc-notification'</span>;</span><br><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> ReactDOM <span class="keyword">from</span> <span class="string">'react-dom'</span>;</span><br><span class="line"><span class="keyword">let</span> notification = <span class="literal">null</span>;</span><br><span class="line">Notification.newInstance(&#123;&#125;, (n) =&gt; notification = n);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">simpleFn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  notification.notice(&#123;</span><br><span class="line">    content: &lt;span&gt;simple show&lt;/span&gt;,</span><br><span class="line">    onClose() &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'simple close'</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">durationFn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  notification.notice(&#123;</span><br><span class="line">    content: &lt;span&gt;can not close...&lt;/span&gt;,</span><br><span class="line">    duration: <span class="literal">null</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">closableFn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  notification.notice(&#123;</span><br><span class="line">    content: &lt;span&gt;closable&lt;/span&gt;,</span><br><span class="line">    duration: <span class="literal">null</span>,</span><br><span class="line">    onClose() &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'closable close'</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">    closable: <span class="literal">true</span>,</span><br><span class="line">    onClick() &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'clicked!!!'</span>);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">close</span>(<span class="params">key</span>) </span>&#123;</span><br><span class="line">  notification.removeNotice(key);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">manualClose</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> key = <span class="built_in">Date</span>.now();</span><br><span class="line">  notification.notice(&#123;</span><br><span class="line">    content: &lt;div&gt;</span><br><span class="line">      &lt;p&gt;click below button to close&lt;/p&gt;</span><br><span class="line">      &lt;button onClick=&#123;close.bind(null, key)&#125;&gt;close&lt;/button&gt;</span><br><span class="line">    &lt;/div&gt;,</span><br><span class="line">    key,</span><br><span class="line">    duration: <span class="literal">null</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> counter = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">let</span> intervalKey;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">updatableFn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (counter !== <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> key = <span class="string">'updatable-notification'</span>;</span><br><span class="line">  <span class="keyword">const</span> initialProps = &#123;</span><br><span class="line">    content: <span class="string">`Timer: <span class="subst">$&#123;counter&#125;</span>s`</span>,</span><br><span class="line">    key,</span><br><span class="line">    duration: <span class="literal">null</span>,</span><br><span class="line">    closable: <span class="literal">true</span>,</span><br><span class="line">    onClose() &#123;</span><br><span class="line">      clearInterval(intervalKey);</span><br><span class="line">      counter = <span class="number">0</span>;</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  notification.notice(initialProps);</span><br><span class="line">  intervalKey = setInterval(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    notification.notice(&#123; ...initialProps, <span class="attr">content</span>: <span class="string">`Timer: <span class="subst">$&#123;++counter&#125;</span>s`</span> &#125;);</span><br><span class="line">  &#125;, <span class="number">1000</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> notification2 = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">const</span> clearPath = <span class="string">'M793 242H366v-74c0-6.7-7.7-10.4-12.9'</span> +</span><br><span class="line">  <span class="string">'-6.3l-142 112c-4.1 3.2-4.1 9.4 0 12.6l142 112c'</span> +</span><br><span class="line">  <span class="string">'5.2 4.1 12.9 0.4 12.9-6.3v-74h415v470H175c-4.4'</span> +</span><br><span class="line">  <span class="string">' 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h618c35.3 0 64-'</span> +</span><br><span class="line">  <span class="string">'28.7 64-64V306c0-35.3-28.7-64-64-64z'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> getSvg = <span class="function">(<span class="params">path, props = &#123;&#125;, align = <span class="literal">false</span></span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;i &#123;...props&#125;&gt;</span><br><span class="line">      &lt;svg</span><br><span class="line">        viewBox=<span class="string">"0 0 1024 1024"</span></span><br><span class="line">        width=<span class="string">"1em"</span></span><br><span class="line">        height=<span class="string">"1em"</span></span><br><span class="line">        fill=<span class="string">"currentColor"</span></span><br><span class="line">        style=&#123;align ? &#123; <span class="attr">verticalAlign</span>: <span class="string">'-.125em '</span> &#125; : &#123;&#125;&#125;</span><br><span class="line">      &gt;</span><br><span class="line">        &lt;path d=&#123;path&#125; /&gt;</span><br><span class="line">      &lt;<span class="regexp">/svg&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/i</span>&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;;</span><br><span class="line">Notification.newInstance(&#123;</span><br><span class="line">  closeIcon: getSvg(clearPath, &#123;&#125;, <span class="literal">true</span>),</span><br><span class="line">&#125;, (n) =&gt; &#123;</span><br><span class="line">  notification2 = n;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">customCloseIconFn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  notification2.notice(&#123;</span><br><span class="line">    content: <span class="string">'It is using custom close icon...'</span>,</span><br><span class="line">    closable: <span class="literal">true</span>,</span><br><span class="line">    duration: <span class="number">0</span>,</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(&lt;div&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;button onClick=&#123;simpleFn&#125;&gt;simple show&lt;/button&gt;</span><br><span class="line">    &lt;button onClick=&#123;durationFn&#125;&gt;duration=0&lt;/button&gt;</span><br><span class="line">    &lt;button onClick=&#123;closableFn&#125;&gt;closable&lt;/button&gt;</span><br><span class="line">    &lt;button onClick=&#123;manualClose&#125;&gt;controlled close&lt;/button&gt;</span><br><span class="line">    &lt;button onClick=&#123;updatableFn&#125;&gt;updatable&lt;/button&gt;</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;button onClick=&#123;customCloseIconFn&#125;&gt;custom close icon&lt;/button&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/div&gt;, <span class="built_in">document</span>.getElementById(<span class="string">'__react-content'</span>));</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/rc-component/" rel="tag"># rc-component</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/22/antd-message源码分析/" rel="next" title="antd message源码分析">
+                <i class="fa fa-chevron-left"></i> antd message源码分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/22/lodash源码之debounce-throttle/" rel="prev" title="lodash源码之debounce/throttle">
+                lodash源码之debounce/throttle <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Notification"><span class="nav-number">1.</span> <span class="nav-text">Notification</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Notice"><span class="nav-number">2.</span> <span class="nav-text">Notice</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用法"><span class="nav-number">3.</span> <span class="nav-text">用法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

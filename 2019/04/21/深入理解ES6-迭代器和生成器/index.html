@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="深入理解ES6,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="用循环语句迭代数据时，必须要初始化一个变量来记录每一次迭代在数据集合中的位置，迭代器的使用可以极大的简化数据操作。 什么是迭代器Iterator迭代器是一种特殊的对象，具有专门的接口，所有迭代器对象都有一个next方法，每次调用都返回一个结果对象。 结果对象有两个属性：一个是value，表示下一个将要返回的值；另一个是done，是一个布尔值，当没有更多可返回数据时返回true。 迭代器还会保存一个">
+<meta name="keywords" content="深入理解ES6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解ES6-迭代器(Iterator)和生成器(generator)">
+<meta property="og:url" content="https://buptlyz.github.io/2019/04/21/深入理解ES6-迭代器和生成器/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="用循环语句迭代数据时，必须要初始化一个变量来记录每一次迭代在数据集合中的位置，迭代器的使用可以极大的简化数据操作。 什么是迭代器Iterator迭代器是一种特殊的对象，具有专门的接口，所有迭代器对象都有一个next方法，每次调用都返回一个结果对象。 结果对象有两个属性：一个是value，表示下一个将要返回的值；另一个是done，是一个布尔值，当没有更多可返回数据时返回true。 迭代器还会保存一个">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.925Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解ES6-迭代器(Iterator)和生成器(generator)">
+<meta name="twitter:description" content="用循环语句迭代数据时，必须要初始化一个变量来记录每一次迭代在数据集合中的位置，迭代器的使用可以极大的简化数据操作。 什么是迭代器Iterator迭代器是一种特殊的对象，具有专门的接口，所有迭代器对象都有一个next方法，每次调用都返回一个结果对象。 结果对象有两个属性：一个是value，表示下一个将要返回的值；另一个是done，是一个布尔值，当没有更多可返回数据时返回true。 迭代器还会保存一个">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/04/21/深入理解ES6-迭代器和生成器/">
+
+
+
+
+
+  <title>深入理解ES6-迭代器(Iterator)和生成器(generator) | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/04/21/深入理解ES6-迭代器和生成器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深入理解ES6-迭代器(Iterator)和生成器(generator)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-21T09:47:33+08:00">
+                2019-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>用循环语句迭代数据时，必须要初始化一个变量来记录每一次迭代在数据集合中的位置，迭代器的使用可以极大的简化数据操作。</p>
+<h2 id="什么是迭代器Iterator"><a href="#什么是迭代器Iterator" class="headerlink" title="什么是迭代器Iterator"></a>什么是迭代器Iterator</h2><p>迭代器是一种特殊的对象，具有专门的接口，所有迭代器对象都有一个next方法，每次调用都返回一个结果对象。</p>
+<p>结果对象有两个属性：一个是<code>value</code>，表示下一个将要返回的值；另一个是<code>done</code>，是一个布尔值，当没有更多可返回数据时返回true。</p>
+<p>迭代器还会保存一个内部指针，用来指向当前集合中值的位置，没调用一次<code>next()</code>方法，都会返回下一个可用的值。</p>
+<p>如果最后一个值返回后再调用<code>next()</code>方法，返回的对象中属性<code>done</code>为true，<code>value</code>则包含迭代器最终返回的值，这个返回值不是数据集的一部分，与函数的返回值类似，是函数调用过程中最后一次给调用者传递信息的方法，如果没有相关数据则返回<code>undefined</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ES5 语法创建一个迭代器</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createIterator</span>(<span class="params">items</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> i = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    next: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">var</span> done = (i &gt;= items.length);</span><br><span class="line">      <span class="keyword">var</span> value = !done ? items[i++] : <span class="literal">undefined</span>;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">return</span> &#123;</span><br><span class="line">        done: done,</span><br><span class="line">        value: value</span><br><span class="line">      &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> iterator = createIterator([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(iterator.next()); <span class="comment">// "&#123; value: 1, done: false &#125;"</span></span><br><span class="line"><span class="built_in">console</span>.log(iterator.next()); <span class="comment">// "&#123; value: 2, done: false &#125;"</span></span><br><span class="line"><span class="built_in">console</span>.log(iterator.next()); <span class="comment">// "&#123; value: 3, done: false &#125;"</span></span><br><span class="line"><span class="built_in">console</span>.log(iterator.next()); <span class="comment">// "&#123; value: undefined, done: true &#125;"</span></span><br></pre></td></tr></table></figure>
+<h2 id="什么是生成器Generator"><a href="#什么是生成器Generator" class="headerlink" title="什么是生成器Generator"></a>什么是生成器Generator</h2><p>生成器是一种返回迭代器的函数，通过<code>function</code>关键字后的星号(<code>*</code>)来表示，函数中会用到新的关键字<code>yield</code>。星号可以紧挨着<code>function</code>关键字，也可以在中间添加一个空格：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> *<span class="title">createIterator</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">yield</span> <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">yield</span> <span class="number">2</span>;</span><br><span class="line">  <span class="keyword">yield</span> <span class="number">3</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>yield</code>关键字也是ES6的新特性，可以通过它来指定调用迭代器的<code>next()</code>方法时的返回值及返回顺序。</p>
+<p>生成器函数最有序的部分大概是：每当执行完一条<code>yield</code>语句后函数就会自动停止执行，直到再次调用迭代器的<code>next()</code>方法才会继续执行下一个<code>yield</code>语句。</p>
+<p>使用<code>yield</code>关键字可以返回任何值或表达式，因此可以通过生成器函数批量的给迭代器添加元素。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> *<span class="title">createIterator</span>(<span class="params">items</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>, len = items.length; i &lt; len; i++) &#123;</span><br><span class="line">    <span class="keyword">yield</span> items[i];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> iterator = createIterator([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.log(iterator.next()); <span class="comment">// "&#123; value: 1, done: false &#125;"</span></span><br><span class="line"><span class="built_in">console</span>.log(iterator.next()); <span class="comment">// "&#123; value: 2, done: false &#125;"</span></span><br><span class="line"><span class="built_in">console</span>.log(iterator.next()); <span class="comment">// "&#123; value: 3, done: false &#125;"</span></span><br><span class="line"><span class="built_in">console</span>.log(iterator.next()); <span class="comment">// "&#123; value: undefined, done: true &#125;"</span></span><br></pre></td></tr></table></figure>
+<h3 id="yield的使用限制"><a href="#yield的使用限制" class="headerlink" title="yield的使用限制"></a>yield的使用限制</h3><p>yield关键字只可在生成器内部使用，在其它地方使用会导致程序抛出语法错误，即便在生成器内部的函数里使用也是如此。常见案例：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> *<span class="title">createIterator</span>(<span class="params">items</span>) </span>&#123;</span><br><span class="line">  items.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">item</span>) </span>&#123; </span><br><span class="line">    <span class="comment">// 语法错误</span></span><br><span class="line">    <span class="keyword">yield</span> item + <span class="number">1</span>; </span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="可迭代对象和for-of循环"><a href="#可迭代对象和for-of循环" class="headerlink" title="可迭代对象和for-of循环"></a>可迭代对象和<code>for-of</code>循环</h2><p>可迭代对象具有<code>Symbol.iterator</code>属性，是一种与迭代器密切相关的对象。<code>Symbol.iterator</code>通过指定的函数可以返回一个作用于附属对象的迭代器。在ES6中，所有的集合对象（数组、<code>Set</code>集合及<code>Map</code>集合）和字符串都是可迭代对象，这些对象中都有默认的迭代器。</p>
+<p><code>for-of</code>循环每执行一次都会调用可迭代对象的<code>next()</code>方法，并将迭代器返回的结果对象的<code>value</code>属性存储在一个变量中，循环将持续执行这一过程直到返回对象的<code>done</code>属性的值为true。</p>
+<h2 id="访问默认迭代器"><a href="#访问默认迭代器" class="headerlink" title="访问默认迭代器"></a>访问默认迭代器</h2><p>可以通过<code>Symbol.iterator</code>来访问对象默认的迭代器。</p>
+<p>由于具有<code>Symbol.iterator</code>属性的对象都有默认的迭代器，因此可以用它来检测对象是否为可迭代对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isIterable</span>(<span class="params">object</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">typeof</span> object[<span class="built_in">Symbol</span>.iterator] === <span class="string">'function'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="创建可迭代对象"><a href="#创建可迭代对象" class="headerlink" title="创建可迭代对象"></a>创建可迭代对象</h2><p>默认情况下，开发者定义的对象都是不可迭代对象，但如果给<code>Symbol.iterator</code>属性添加一个生成器，则可以将其变为可迭代对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> collection = &#123;</span><br><span class="line">  items: [],</span><br><span class="line">  *[<span class="built_in">Symbol</span>.iterator]() &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> item <span class="keyword">of</span> <span class="keyword">this</span>.items) &#123;</span><br><span class="line">      <span class="keyword">yield</span> item;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">collection.items.push(<span class="number">1</span>);</span><br><span class="line">collection.items.push(<span class="number">2</span>);</span><br><span class="line">collection.items.push(<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> x <span class="keyword">of</span> collection) &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(x);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出结果</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+<h2 id="内建迭代器"><a href="#内建迭代器" class="headerlink" title="内建迭代器"></a>内建迭代器</h2><p>在ES6中有3中类型但集合对象：数组、<code>Map</code>集合与<code>Set</code>集合。为了更好的访问对象中的内容，这3种对象都内建来三种迭代器：</p>
+<ul>
+<li>entries()</li>
+<li>values()</li>
+<li>keys()</li>
+</ul>
+<h3 id="entries-迭代器-TODO"><a href="#entries-迭代器-TODO" class="headerlink" title="entries()迭代器(TODO)"></a>entries()迭代器(TODO)</h3><h3 id="values-迭代器-TODO"><a href="#values-迭代器-TODO" class="headerlink" title="values()迭代器(TODO)"></a>values()迭代器(TODO)</h3><h3 id="keys-迭代器-TODO"><a href="#keys-迭代器-TODO" class="headerlink" title="keys()迭代器(TODO)"></a>keys()迭代器(TODO)</h3><h2 id="字符串迭代器"><a href="#字符串迭代器" class="headerlink" title="字符串迭代器"></a>字符串迭代器</h2><p>由于方括号操作的是编码单元而非字符，因此无法正确访问双字节字符。由于双字节字符被视作两个独立的编码单元，在使用方括号获取双字节字符时得到的是两个空。</p>
+<p>所幸，ES6的目标是全面支持Unicode，并且我们可以通过改变字符串的默认迭代器来解决这个问题，使其操作字符而不是编码单元。</p>
+<h2 id="NodeList迭代器"><a href="#NodeList迭代器" class="headerlink" title="NodeList迭代器"></a><code>NodeList</code>迭代器</h2><p>自从ES6添加了默认迭代器后，DOM定义中的<code>NodeList</code>类型（定义在HTML标准而不是ES6标准中）也拥有了默认迭代器，其行为与数组的默认迭代器完全一致。所以可以将<code>NodeList</code>应用于<code>for-of</code>循环及其他支持对象默认迭代器的地方。</p>
+<h2 id="展开运算符与非数组可迭代对象"><a href="#展开运算符与非数组可迭代对象" class="headerlink" title="展开运算符与非数组可迭代对象"></a>展开运算符与非数组可迭代对象</h2><p>由于展开运算符可以作用于任意可迭代对象，因此如果想将可迭代对象转换为数组，这是最简单的方法。你既可以将字符串中的每一个字符（不是编码单元）存入新数组中，也可以将浏览器中的<code>NodeList</code>对象中的每一个节点存入新数组中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">set</span> = new Set([1, 2, 3]),</span><br><span class="line">  map = new Map(['name', 'Nicholas'], ['age', 25]),</span><br><span class="line">  arrSet = [...<span class="keyword">set</span>],</span><br><span class="line">  arrMap = [...map];</span><br><span class="line"></span><br><span class="line">console.log(arrSet); // [1, 2, 3]</span><br><span class="line">console.log(arrMap); // ['name', 'Nicholas'], ['age', 25]</span><br></pre></td></tr></table></figure>
+<h2 id="高级迭代器功能"><a href="#高级迭代器功能" class="headerlink" title="高级迭代器功能"></a>高级迭代器功能</h2><h3 id="给迭代器传递参数-TODO"><a href="#给迭代器传递参数-TODO" class="headerlink" title="给迭代器传递参数(TODO)"></a>给迭代器传递参数(TODO)</h3>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/深入理解ES6/" rel="tag"># 深入理解ES6</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/20/使用React-Virtualized渲染列表/" rel="next" title="使用React Virtualized渲染列表(译)">
+                <i class="fa fa-chevron-left"></i> 使用React Virtualized渲染列表(译)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/21/深入浏览器理解CSS-animations-和-transitions的性能问题/" rel="prev" title="深入浏览器理解CSS animations 和 transitions的性能问题(转)">
+                深入浏览器理解CSS animations 和 transitions的性能问题(转) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是迭代器Iterator"><span class="nav-number">1.</span> <span class="nav-text">什么是迭代器Iterator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是生成器Generator"><span class="nav-number">2.</span> <span class="nav-text">什么是生成器Generator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#yield的使用限制"><span class="nav-number">2.1.</span> <span class="nav-text">yield的使用限制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可迭代对象和for-of循环"><span class="nav-number">3.</span> <span class="nav-text">可迭代对象和for-of循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#访问默认迭代器"><span class="nav-number">4.</span> <span class="nav-text">访问默认迭代器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建可迭代对象"><span class="nav-number">5.</span> <span class="nav-text">创建可迭代对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内建迭代器"><span class="nav-number">6.</span> <span class="nav-text">内建迭代器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#entries-迭代器-TODO"><span class="nav-number">6.1.</span> <span class="nav-text">entries()迭代器(TODO)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#values-迭代器-TODO"><span class="nav-number">6.2.</span> <span class="nav-text">values()迭代器(TODO)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#keys-迭代器-TODO"><span class="nav-number">6.3.</span> <span class="nav-text">keys()迭代器(TODO)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字符串迭代器"><span class="nav-number">7.</span> <span class="nav-text">字符串迭代器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#NodeList迭代器"><span class="nav-number">8.</span> <span class="nav-text">NodeList迭代器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#展开运算符与非数组可迭代对象"><span class="nav-number">9.</span> <span class="nav-text">展开运算符与非数组可迭代对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级迭代器功能"><span class="nav-number">10.</span> <span class="nav-text">高级迭代器功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#给迭代器传递参数-TODO"><span class="nav-number">10.1.</span> <span class="nav-text">给迭代器传递参数(TODO)</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

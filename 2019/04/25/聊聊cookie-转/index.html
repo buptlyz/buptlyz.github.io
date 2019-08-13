@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="cookie,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="参考链接1参考链接2 cookie是什么这个讲起来很简单，了解http的同学，肯定知道，http是一个不保存状态的协议，什么叫不保存状态，就是一个服务器是不清楚是不是同一个浏览器在访问他，在cookie之前，有另外的技术是可以解决，这里简单讲一下，就是在请求中插入一个token，然后在发送请求的时候，把这个东西带给服务器，这种方式是易出错，所以有了cookie的出现  cookie原理 第一次访问">
+<meta name="keywords" content="cookie">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊聊cookie(转)">
+<meta property="og:url" content="https://buptlyz.github.io/2019/04/25/聊聊cookie-转/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="参考链接1参考链接2 cookie是什么这个讲起来很简单，了解http的同学，肯定知道，http是一个不保存状态的协议，什么叫不保存状态，就是一个服务器是不清楚是不是同一个浏览器在访问他，在cookie之前，有另外的技术是可以解决，这里简单讲一下，就是在请求中插入一个token，然后在发送请求的时候，把这个东西带给服务器，这种方式是易出错，所以有了cookie的出现  cookie原理 第一次访问">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/9749a2f293a5b4f84d8a40b4e8657faf?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/07ecb36c4820a66de90013f303cac8c0?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/ef12b6b1b2590434c959161d39fc7adc?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://image-static.segmentfault.com/124/862/1248624194-56dd2f47053e4_articlex">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/88a294c5374093cedd41bb1ce50cd9d4?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/fb6f3ec85759285e8e9eb57fd979078b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/348aab52f1892d29ecd3a1e5e5167cb9?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/dd48df2362163b22d8d69d21918d8835?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/cf582beb568a79b1d9dd8ef97be707f6?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2017/10/2/ac1f0d4e46b21da20d76b8136dd7583f?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://image-static.segmentfault.com/239/160/2391604247-56dd2eafae06e_articlex">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.926Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="聊聊cookie(转)">
+<meta name="twitter:description" content="参考链接1参考链接2 cookie是什么这个讲起来很简单，了解http的同学，肯定知道，http是一个不保存状态的协议，什么叫不保存状态，就是一个服务器是不清楚是不是同一个浏览器在访问他，在cookie之前，有另外的技术是可以解决，这里简单讲一下，就是在请求中插入一个token，然后在发送请求的时候，把这个东西带给服务器，这种方式是易出错，所以有了cookie的出现  cookie原理 第一次访问">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2017/10/2/9749a2f293a5b4f84d8a40b4e8657faf?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/04/25/聊聊cookie-转/">
+
+
+
+
+
+  <title>聊聊cookie(转) | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/04/25/聊聊cookie-转/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">聊聊cookie(转)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-25T14:04:47+08:00">
+                2019-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://juejin.im/post/59d1f59bf265da06700b0934" target="_blank" rel="noopener">参考链接1</a><br><a href="https://segmentfault.com/a/1190000004556040" target="_blank" rel="noopener">参考链接2</a></p>
+<h2 id="cookie是什么"><a href="#cookie是什么" class="headerlink" title="cookie是什么"></a>cookie是什么</h2><p>这个讲起来很简单，了解http的同学，肯定知道，http是一个不保存状态的协议，什么叫不保存状态，就是一个服务器是不清楚是不是同一个浏览器在访问他，在cookie之前，有另外的技术是可以解决，这里简单讲一下，就是在请求中插入一个token，然后在发送请求的时候，把这个东西带给服务器，这种方式是易出错，所以有了cookie的出现</p>
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/2/9749a2f293a5b4f84d8a40b4e8657faf?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="cookie是什么"></p>
+<h2 id="cookie原理"><a href="#cookie原理" class="headerlink" title="cookie原理"></a><code>cookie</code>原理</h2><p><img src="https://user-gold-cdn.xitu.io/2017/10/2/07ecb36c4820a66de90013f303cac8c0?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="cookie原理"></p>
+<p>第一次访问网站的时候，浏览器发出请求，服务器响应请求后，会将cookie放入到响应请求中，在浏览器第二次发请求的时候，会把cookie带过去，服务端会辨别用户身份，当然服务器也可以修改cookie内容</p>
+<h2 id="cookie不可跨域"><a href="#cookie不可跨域" class="headerlink" title="cookie不可跨域"></a><code>cookie</code>不可跨域</h2><p>我就几个例子你就懂了，当我打开百度的网页，我要设置一个cookie的时候，我的指令如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.cookie=<span class="string">'myname=laihuamin;path=/;domain=.baidu.com'</span>;</span><br><span class="line"><span class="built_in">document</span>.cookie=<span class="string">'myname=huaminlai;path=/;domain=.google.com'</span>;</span><br></pre></td></tr></table></figure>
+<p>当我将这两个语句都放到浏览器控制台运行的时候，你会发现一点,注意，上面两个cookie的值是不相同的，看清楚:</p>
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/2/ef12b6b1b2590434c959161d39fc7adc?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="cookie不可跨域"></p>
+<p>显而易见的是，真正能把cookie设置上去的只有domain是.baidu.com的cookie绑定到了域名上，所以上面所说的不可跨域性，就是不能在不同的域名下用，每个cookie都会绑定单一的域名。</p>
+<h2 id="cookie的格式"><a href="#cookie的格式" class="headerlink" title="cookie的格式"></a>cookie的格式</h2><p>JS原生的API提供了获取<code>cookie</code>的方法：<code>document.cookie</code>（注意，这个方法只能获取非<code>HttpOnly</code>类型的<code>cookie</code>）。在<code>console</code>中执行这段代码可以看到结果如下图：</p>
+<p><img src="https://image-static.segmentfault.com/124/862/1248624194-56dd2f47053e4_articlex" alt="cookie格式"></p>
+<h2 id="cookie属性"><a href="#cookie属性" class="headerlink" title="cookie属性"></a><code>cookie</code>属性</h2><p>每个<code>cookie</code>都有一定的属性，如什么时候失效，要发送到哪个域名，哪个路径等等。这些属性是通过<code>cookie</code>选项来设置的，<code>cookie</code>选项包括：<code>expires</code>、<code>domain</code>、<code>path</code>、<code>secure</code>、<code>HttpOnly</code>。在设置任一个<code>cookie</code>时都可以设置相关的这些属性，当然也可以不设置，这时会使用这些属性的默认值。在设置这些属性时，属性之间由一个分号和一个空格隔开。代码示例如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"key=name; expires=Thu, 25 Feb 2016 04:18:00 GMT; domain=ppsc.sankuai.com; path=/; secure; HttpOnly"</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/2/88a294c5374093cedd41bb1ce50cd9d4?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="cookie属性"></p>
+<ul>
+<li><code>name</code></li>
+<li><code>value</code></li>
+<li><code>domain</code></li>
+<li><code>path</code></li>
+<li><code>expires</code></li>
+<li><code>secure</code></li>
+<li><code>HttpOnly</code></li>
+</ul>
+<h3 id="name"><a href="#name" class="headerlink" title="name"></a><code>name</code></h3><p>这个显而易见，就是代表cookie的名字的意思，一个域名下绑定的cookie，name不能相同，相同的name的值会被覆盖掉，有兴趣的同学可以试一试，我在项目中切实用到过。</p>
+<h3 id="value"><a href="#value" class="headerlink" title="value"></a><code>value</code></h3><p>这个就是每个cookie拥有的一个属性，它表示cookie的值，但是我在这里想说的不是这个，因为我在网上看到两种说法，如下：</p>
+<ol>
+<li>cookie的值必须被URL编码</li>
+<li>对cookie的值进行编码不是必须的，还举了原始文档中所说的，仅对三种符号必须进行编码：分号、逗号和空格</li>
+</ol>
+<p>这个东西得一分为二来看，先看下面的图：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/2/fb6f3ec85759285e8e9eb57fd979078b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="value"></p>
+<p>我在网上看到那么一种说法：</p>
+<blockquote>
+<p>由于cookie规定是名称/值是不允许包含分号，逗号，空格的，所以为了不给用户到来麻烦，考虑服务器的兼容性，任何存储cookie的数据都应该被编码。</p>
+</blockquote>
+<h3 id="domain和path"><a href="#domain和path" class="headerlink" title="domain和path"></a><code>domain</code>和<code>path</code></h3><p><code>domain</code>是域名，<code>path</code>是路径，两者加起来就构成了 URL，<code>domain</code>和<code>path</code>一起来限制<code>cookie</code>能被哪些 URL 访问。</p>
+<p>一句话概括：某<code>cookie</code>的<code>domain</code>为<code>“baidu.com”</code>, <code>path</code>为<code>“/ ”</code>，若请求的URL(URL可以是<code>js/html/img/css</code>资源请求，但不包括<code>XHR</code>请求)的域名是<code>“baidu.com”</code>或其子域如<code>“api.baidu.com”</code>、<code>“dev.api.baidu.com”</code>，且 URL 的路径是<code>“/ ”</code>或子路径<code>“/home”</code>、<code>“/home/login”</code>，则浏览器会将此 <code>cookie</code> 添加到该请求的 <code>cookie</code> 头部中。</p>
+<p>所以<code>domain</code>和<code>path</code>2个选项共同决定了<code>cookie</code>何时被浏览器自动添加到请求头部中发送出去。如果没有设置这两个选项，则会使用默认值。<code>domain</code>的默认值为设置该<code>cookie</code>的网页所在的域名，<code>path</code>默认值为设置该<code>cookie</code>的网页所在的目录。</p>
+<blockquote>
+<p>特别说明1：<br>发生跨域xhr请求时，即使请求URL的域名和路径都满足 <code>cookie</code> 的 <code>domain</code> 和 <code>path</code>，默认情况下<code>cookie</code>也不会自动被添加到请求头部中。若想知道原因请阅读本文最后一节）</p>
+<p>特别说明2：<br><code>domain</code>是可以设置为页面本身的域名（本域），或页面本身域名的父域，但不能是公共后缀<code>public suffix</code>。举例说明下：如果页面域名为<code>www.baidu.com</code>, <code>domain</code>可以设置为<code>“www.baidu.com”</code>，也可以设置为<code>“baidu.com”</code>，但不能设置为<code>“.com”</code>或<code>“com”</code>。</p>
+</blockquote>
+<h3 id="expires"><a href="#expires" class="headerlink" title="expires"></a><code>expires</code></h3><p><img src="https://user-gold-cdn.xitu.io/2017/10/2/348aab52f1892d29ecd3a1e5e5167cb9?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="expires"></p>
+<p><code>expires</code>选项用来设置“<code>cookie</code>什么时间内有效”。</p>
+<p><code>expires</code>其实是<code>cookie</code>失效日期，<code>expires</code>必须是<code>GMT</code>格式的时间（可以通过<code>new Date().toGMTString()</code>或者<code>new Date().toUTCString()</code>来获得）。如<code>expires=Thu, 25 Feb 2016 04:18:00 GMT</code>表示<code>cookie</code>讲在2016年2月25日4:18分之后失效，对于失效的<code>cookie</code>浏览器会清空。</p>
+<p>如果没有设置该选项，则默认有效期为<code>session</code>，即会话<code>cookie</code>。这种<code>cookie</code>在浏览器关闭后就没有了。</p>
+<blockquote>
+<p>expires 是 http/1.0协议中的选项，在新的http/1.1协议中expires已经由 max-age 选项代替，两者的作用都是限制cookie 的有效时间。expires的值是一个时间点（cookie失效时刻= expires），而max-age 的值是一个以秒为单位时间段（cookie失效时刻= 创建时刻+ max-age）。<br>另外，max-age 的默认值是 -1(即有效期为 session )；若max-age有三种可能值：负数、0、正数。负数：有效期session；0：删除cookie；正数：有效期为创建时刻+ max-age</p>
+</blockquote>
+<p>如果你想要<code>cookie</code>存在一段时间，那么你可以通过设置<code>Expires</code>属性为未来的一个时间节点，<code>Expires</code>这个是代表当前时间的，这个属性已经逐渐被我们下面这个主人公所取代——Max-Age。</p>
+<p>Max-Age，是以秒为单位的。</p>
+<ul>
+<li>Max-Age为正数时，<code>cookie</code>会在Max-Age秒之后，被删除。</li>
+<li>当Max-Age为负数时，表示的是临时储存，不会生出<code>cookie</code>文件，只会存在浏览器内存中，且只会在打开的浏览器窗口或者子窗口有效，一旦浏览器关闭，<code>cookie</code>就会消失。</li>
+<li>当Max-Age为0时，又会发生什么呢，删除<code>cookie</code>，因为<code>cookie</code>机制本身没有设置删除<code>cookie</code>，失效的<code>cookie</code>会被浏览器自动从内存中删除，所以，它实现的就是让<code>cookie</code>失效。</li>
+</ul>
+<h3 id="secure"><a href="#secure" class="headerlink" title="secure"></a><code>secure</code></h3><p><img src="https://user-gold-cdn.xitu.io/2017/10/2/dd48df2362163b22d8d69d21918d8835?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="secure"></p>
+<p>这个属性译为安全，http不仅是无状态的，还是不安全的协议，容易被劫持，打个比方，你在手机端浏览网页的时候，有没有中国移动图标跳出来过，闲言少叙，当这个属性设置为true时，此cookie只会在https和ssl等安全协议下传输</p>
+<p><strong>提示：</strong> <em>这个属性并不能对客户端的cookie进行加密，不能保证绝对的安全性。</em></p>
+<h3 id="HttpOnly"><a href="#HttpOnly" class="headerlink" title="HttpOnly"></a><code>HttpOnly</code></h3><p>这个属性是面试的时候常考的，如果这个属性设置为true，就不能通过js脚本来获取cookie的值，能有效的防止xss攻击,看MDN的官方文档：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/2/cf582beb568a79b1d9dd8ef97be707f6?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="HttpOnly"></p>
+<blockquote>
+<p>——httpOnly与安全</p>
+<p>从上面介绍中，大家是否会有这样的疑问：为什么我们要限制客户端去访问cookie？其实这样做是为了保障安全。</p>
+<p>试想：如果任何 cookie 都能被客户端通过document.cookie获取会发生什么可怕的事情。当我们的网页遭受了 XSS 攻击，有一段恶意的script脚本插到了网页中。这段script脚本做的事情是：通过document.cookie读取了用户身份验证相关的 cookie，并将这些 cookie 发送到了攻击者的服务器。攻击者轻而易举就拿到了用户身份验证信息，于是就可以摇摇大摆地冒充此用户访问你的服务器了（因为攻击者有合法的用户身份验证信息，所以会通过你服务器的验证）。</p>
+</blockquote>
+<h2 id="关于js操作cookie"><a href="#关于js操作cookie" class="headerlink" title="关于js操作cookie"></a>关于js操作<code>cookie</code></h2><p>document.cookie可以对cookie进行读写，看一下两条指令：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//读取浏览器中的cookie</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">document</span>.cookie);</span><br><span class="line"><span class="comment">//写入cookie</span></span><br><span class="line"><span class="built_in">document</span>.cookie=<span class="string">"age=12; expires=Thu, 26 Feb 2116 11:50:25 GMT; domain=sankuai.com; path=/"</span>;</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<ul>
+<li>客户端可以设置cookie 的下列选项：<code>expires</code>、<code>domain</code>、<code>path</code>、<code>secure</code>（有条件：只有在<code>https</code>协议的网页中，客户端设置<code>secure</code>类型的<code>cookie</code>才能成功），但无法设置<code>HttpOnly</code>选项。</li>
+</ul>
+<h3 id="设置多个cookie"><a href="#设置多个cookie" class="headerlink" title="设置多个cookie"></a>设置多个<code>cookie</code></h3><p>当要设置多个<code>cookie</code>时， js代码很自然地我们会这么写：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.cookie = <span class="string">"name=Jonh; age=12; class=111"</span>;</span><br></pre></td></tr></table></figure>
+<p>但你会发现这样写只是添加了第一个<code>cookie`</code>“name=John”<code>，后面的所有</code>cookie<code>都没有添加成功。所以最简单的设置多个</code>cookie<code>的方法就在重复执行</code>document.cookie = “key=name”`，如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.cookie = <span class="string">"name=Jonh"</span>;</span><br><span class="line"><span class="built_in">document</span>.cookie = <span class="string">"age=12"</span>;</span><br><span class="line"><span class="built_in">document</span>.cookie = <span class="string">"class=111"</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="服务端如何设置cookie"><a href="#服务端如何设置cookie" class="headerlink" title="服务端如何设置cookie"></a>服务端如何设置<code>cookie</code></h2><p>关于怎么设置cookie，我们只要打开控制台，看一个http的请求头和响应头中的东西即可明白：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2017/10/2/ac1f0d4e46b21da20d76b8136dd7583f?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="服务端如何设置cookie"></p>
+<p>不管你是请求一个资源文件（如<code>html/js/css/image</code>），还是发送一个<code>ajax</code>请求，服务端都会返回<code>response</code>。而<code>response header</code>中有一项叫<code>set-cookie</code>，是服务端专门用来设置<code>cookie</code>的。如下图所示，服务端返回的<code>response header</code>中有5个<code>set-cookie</code>字段，每个字段对应一个<code>cookie</code>（注意不能将多个<code>cookie</code>放在一个<code>set-cookie</code>字段中），<code>set-cookie</code>字段的值就是普通的字符串，每个<code>cookie</code>还设置了相关属性选项。</p>
+<p>注意：</p>
+<ul>
+<li>一个<code>Set-Cookie</code>字段只能设置一个<code>cookie</code>，当你要想设置多个 <code>cookie</code>，需要添加同样多的<code>Set-Cookie</code>字段。</li>
+<li>服务端可以设置<code>cookie</code> 的所有选项：<code>expires</code>、<code>domain</code>、<code>path</code>、<code>secure</code>、<code>HttpOnly</code></li>
+</ul>
+<h2 id="我们看到的cookie"><a href="#我们看到的cookie" class="headerlink" title="我们看到的cookie"></a>我们看到的<code>cookie</code></h2><p>发送一个AJAX请求，<code>header</code>如下图：</p>
+<p><img src="https://image-static.segmentfault.com/239/160/2391604247-56dd2eafae06e_articlex" alt="我们看到的cookie"></p>
+<p>从上图中我们会看到<code>request header</code>中自动添加了<code>Cookie</code>字段（我并没有手动添加这个字段哦~），<code>Cookie</code>字段的值其实就是我设置的那4个<code>cookie</code>。这个请求最终会发送到<code>http://ppsc.sankuai.com</code>这个服务器上，这个服务器就能从接收到的<code>request header</code>中提取那4个<code>cookie</code>。</p>
+<p>上图展示了<code>cookie</code>的基本通信流程：设置<code>cookie</code> =&gt; <code>cookie</code>被自动添加到<code>request header</code>中 =&gt; 服务端接收到<code>cookie</code>。这个流程中有几个问题需要好好研究：</p>
+<ol>
+<li>什么样的数据适合放在<code>cookie</code>中？</li>
+<li><code>cookie</code>是怎么设置的？</li>
+<li><code>cookie</code>为什么会自动加到<code>request header</code>中？</li>
+<li><code>cookie</code>怎么增删查改？</li>
+</ol>
+<p>我们要带着这几个问题继续往下阅读。</p>
+<h2 id="cookie是怎么工作的？"><a href="#cookie是怎么工作的？" class="headerlink" title="cookie是怎么工作的？"></a><code>cookie</code>是怎么工作的？</h2><p>首先必须明确一点，存储<code>cookie</code>是浏览器提供的功能。<code>cookie</code>其实是存储在浏览器中的纯文本，浏览器的安装目录下会专门有一个<code>cookie</code>文件夹来存放各个域下设置的<code>cookie</code>。</p>
+<p>当网页要发<code>http</code>请求时，浏览器会先检查是否有相应的<code>cookie</code>，有则自动添加在<code>request header</code>中的<code>cookie</code>字段中。这些是浏览器自动帮我们做的，而且每一次<code>http</code>请求浏览器都会自动帮我们做。这个特点很重要，因为这关系到“什么样的数据适合存储在<code>cookie</code>中”。</p>
+<p>存储在<code>cookie</code>中的数据，每次都会被浏览器自动放在<code>http</code>请求中，如果这些数据并不是每个请求都需要发给服务端的数据，浏览器这设置自动处理无疑增加了网络开销；但如果这些数据是每个请求都需要发给服务端的数据（比如身份认证信息），浏览器这设置自动处理就大大免去了重复添加操作。所以对于那设置“每次请求都要携带的信息（最典型的就是身份认证信息）”就特别适合放在<code>cookie</code>中，其他类型的数据就不适合了。</p>
+<p>但在<code>localStorage</code>出现之前，<code>cookie</code>被滥用当做了存储工具。什么数据都放在<code>cookie</code>中，即使这些数据只在页面中使用而不需要随请求传送到服务端。当然<code>cookie</code>标准还是做了一些限制的：每个域名下的<code>cookie</code>的大小最大为<code>4KB</code>，每个域名下的<code>cookie</code>数量最多为<code>20</code>个（但很多浏览器厂商在具体实现时支持大于<code>20</code>个）。</p>
+<h2 id="如何修改、删除"><a href="#如何修改、删除" class="headerlink" title="如何修改、删除"></a>如何修改、删除</h2><h3 id="修改cookie"><a href="#修改cookie" class="headerlink" title="修改cookie"></a>修改<code>cookie</code></h3><p>要想修改一个<code>cookie</code>，只需要重新赋值就行，旧的值会被新的值覆盖。但要注意一点，在设置新<code>cookie</code>时，<code>path/domain</code>这几个选项一定要和旧<code>cookie</code>保持一样。否则不会修改旧值，而是添加了一个新的 <code>cookie</code>。</p>
+<h3 id="删除-cookie"><a href="#删除-cookie" class="headerlink" title="删除 cookie"></a>删除 <code>cookie</code></h3><p>删除一个<code>cookie</code>也挺简单，也是重新赋值，只要将这个新<code>cookie</code>的<code>expires</code>选项设置为一个过去的时间点就行了。但同样要注意，<code>path/domain</code>这几个选项一定要旧<code>cookie</code>保持一样。</p>
+<h2 id="cookie-编码"><a href="#cookie-编码" class="headerlink" title="cookie 编码"></a><code>cookie</code> 编码</h2><p><code>cookie</code>其实是个字符串，但这个字符串中逗号、分号、空格被当做了特殊符号。所以当<code>cookie</code>的<code>key</code>和<code>value</code>中含有这3个特殊字符时，需要对其进行额外编码，一般会用<code>escape</code>进行编码，读取时用<code>unescape</code>进行解码；当然也可以用<code>encodeURIComponent/decodeURIComponent</code>或者<code>encodeURI/decodeURI</code>（<a href="http://www.cnblogs.com/season-huang/p/3439277.html" target="_blank" rel="noopener">三者的区别可以参考这篇文章</a>）。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> key = <span class="built_in">escape</span>(<span class="string">"name;value"</span>);</span><br><span class="line"><span class="keyword">var</span> value = <span class="built_in">escape</span>(<span class="string">"this is a value contain , and ;"</span>);</span><br><span class="line"><span class="built_in">document</span>.cookie= key + <span class="string">"="</span> + value + <span class="string">"; expires=Thu, 26 Feb 2116 11:50:25 GMT; domain=sankuai.com; path=/"</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="跨域请求中-cookie"><a href="#跨域请求中-cookie" class="headerlink" title="跨域请求中 cookie"></a>跨域请求中 <code>cookie</code></h2><p>之前在介绍 XHR 的一篇文章里面提过：默认情况下，在发生跨域时，<code>cookie</code>作为一种<code>credential</code>信息是不会被传送到服务端的。必须要进行额外设置才可以。具体原因和如何设置可以参考我的这篇文章：<a href="https://segmentfault.com/a/1190000004322487#articleHeader13" target="_blank" rel="noopener">你真的会使用XMLHttpRequest吗？</a></p>
+<p>另外，关于跨域资源共享 CORS极力推荐大家阅读阮一峰老师的这篇 跨域资源共享 CORS 详解。</p>
+<h2 id="其他补充"><a href="#其他补充" class="headerlink" title="其他补充"></a>其他补充</h2><ol>
+<li>什么时候 <code>cookie</code> 会被覆盖：<code>name/domain/path</code>这3个字段都相同的时候；</li>
+<li>关于domain的补充说明（<a href="https://tools.ietf.org/html/rfc6265#section-5.2.3" target="_blank" rel="noopener">参考1</a>/<a href="http://erik.io/blog/2014/03/04/definitive-guide-to-cookie-domains/" target="_blank" rel="noopener">参考2</a>）：<ol>
+<li>如果显式设置了 domain，则设置成什么，浏览器就存成什么；但如果没有显式设置，则浏览器会自动取 url 的 host 作为 domain 值；</li>
+<li>新的规范中，显式设置 domain 时，如果 value 最前面带点，则浏览器处理时会将这个点去掉，所以最后浏览器存的就是没有点的（注意：但目前大多数浏览器并未全部这么实现）</li>
+<li>前面带点‘.’和不带点‘.’有啥区别：<ul>
+<li>带点：任何 subdomain 都可以访问，包括父 domain</li>
+<li>不带点：只有完全一样的域名才能访问，subdomain 不能（但在 IE 下比较特殊，它支持 subdomain 访问）</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>咱们今天就聊到这里，若有不对之处欢迎各位指正~~<br>最后附上一些参考资料：</p>
+<ul>
+<li><a href="http://www.quirksmode.org/js/cookies.html" target="_blank" rel="noopener">http://www.quirksmode.org/js/cookies.html</a></li>
+<li><a href="http://www.tutorialspoint.com/javascript/javascript_cookies.htm" target="_blank" rel="noopener">http://www.tutorialspoint.com/javascript/javascript_cookies.htm</a></li>
+<li><a href="http://www.allaboutcookies.org/cookies/cookies-the-same.html" target="_blank" rel="noopener">http://www.allaboutcookies.org/cookies/cookies-the-same.html</a></li>
+<li><a href="http://bubkoo.com/2014/04/21/http-cookies-explained/" target="_blank" rel="noopener">http://bubkoo.com/2014/04/21/http-cookies-explained/</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/cookie/" rel="tag"># cookie</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/25/浏览器同源政策及其规避方法-转/" rel="next" title="浏览器同源政策及其规避方法(转)">
+                <i class="fa fa-chevron-left"></i> 浏览器同源政策及其规避方法(转)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/25/你真的会使用XMLHttpRequest吗？/" rel="prev" title="你真的会使用XMLHttpRequest吗？(转)">
+                你真的会使用XMLHttpRequest吗？(转) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie是什么"><span class="nav-number">1.</span> <span class="nav-text">cookie是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie原理"><span class="nav-number">2.</span> <span class="nav-text">cookie原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie不可跨域"><span class="nav-number">3.</span> <span class="nav-text">cookie不可跨域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie的格式"><span class="nav-number">4.</span> <span class="nav-text">cookie的格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie属性"><span class="nav-number">5.</span> <span class="nav-text">cookie属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#name"><span class="nav-number">5.1.</span> <span class="nav-text">name</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#value"><span class="nav-number">5.2.</span> <span class="nav-text">value</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#domain和path"><span class="nav-number">5.3.</span> <span class="nav-text">domain和path</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#expires"><span class="nav-number">5.4.</span> <span class="nav-text">expires</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#secure"><span class="nav-number">5.5.</span> <span class="nav-text">secure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HttpOnly"><span class="nav-number">5.6.</span> <span class="nav-text">HttpOnly</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于js操作cookie"><span class="nav-number">6.</span> <span class="nav-text">关于js操作cookie</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#设置多个cookie"><span class="nav-number">6.1.</span> <span class="nav-text">设置多个cookie</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端如何设置cookie"><span class="nav-number">7.</span> <span class="nav-text">服务端如何设置cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#我们看到的cookie"><span class="nav-number">8.</span> <span class="nav-text">我们看到的cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie是怎么工作的？"><span class="nav-number">9.</span> <span class="nav-text">cookie是怎么工作的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何修改、删除"><span class="nav-number">10.</span> <span class="nav-text">如何修改、删除</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#修改cookie"><span class="nav-number">10.1.</span> <span class="nav-text">修改cookie</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除-cookie"><span class="nav-number">10.2.</span> <span class="nav-text">删除 cookie</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cookie-编码"><span class="nav-number">11.</span> <span class="nav-text">cookie 编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨域请求中-cookie"><span class="nav-number">12.</span> <span class="nav-text">跨域请求中 cookie</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他补充"><span class="nav-number">13.</span> <span class="nav-text">其他补充</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">14.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

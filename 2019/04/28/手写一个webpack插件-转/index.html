@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="webpack,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="原文地址 webpack本质上是一种事件流的机制，核心是Tapable。 webpack中最核心的负责编译的Compiler和负责创建bundles的Compilation都是Tapable的实例。 Tapable是什么？Tapable暴露了很多Hook(钩子)类，为插件提供挂载。 1234567891011const &amp;#123;  SyncHook,  SyncBailHook,  SyncW">
+<meta name="keywords" content="webpack">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手写一个webpack插件(转)">
+<meta property="og:url" content="https://buptlyz.github.io/2019/04/28/手写一个webpack插件-转/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="原文地址 webpack本质上是一种事件流的机制，核心是Tapable。 webpack中最核心的负责编译的Compiler和负责创建bundles的Compilation都是Tapable的实例。 Tapable是什么？Tapable暴露了很多Hook(钩子)类，为插件提供挂载。 1234567891011const &amp;#123;  SyncHook,  SyncBailHook,  SyncW">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.923Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="手写一个webpack插件(转)">
+<meta name="twitter:description" content="原文地址 webpack本质上是一种事件流的机制，核心是Tapable。 webpack中最核心的负责编译的Compiler和负责创建bundles的Compilation都是Tapable的实例。 Tapable是什么？Tapable暴露了很多Hook(钩子)类，为插件提供挂载。 1234567891011const &amp;#123;  SyncHook,  SyncBailHook,  SyncW">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/04/28/手写一个webpack插件-转/">
+
+
+
+
+
+  <title>手写一个webpack插件(转) | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/04/28/手写一个webpack插件-转/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">手写一个webpack插件(转)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-28T09:08:34+08:00">
+                2019-04-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://segmentfault.com/a/1190000019010101" target="_blank" rel="noopener">原文地址</a></p>
+<p>webpack本质上是一种事件流的机制，核心是<a href="https://github.com/webpack/tapable" target="_blank" rel="noopener"><code>Tapable</code></a>。</p>
+<p>webpack中最核心的负责编译的<code>Compiler</code>和负责创建<code>bundles</code>的<code>Compilation</code>都是<a href="https://github.com/webpack/tapable" target="_blank" rel="noopener"><code>Tapable</code></a>的实例。</p>
+<h2 id="Tapable是什么？"><a href="#Tapable是什么？" class="headerlink" title="Tapable是什么？"></a><a href="https://github.com/webpack/tapable" target="_blank" rel="noopener"><code>Tapable</code></a>是什么？</h2><p><a href="https://github.com/webpack/tapable" target="_blank" rel="noopener"><code>Tapable</code></a>暴露了很多<code>Hook</code>(钩子)类，为插件提供挂载。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123;</span><br><span class="line">  SyncHook,</span><br><span class="line">  SyncBailHook,</span><br><span class="line">  SyncWaterfallHook,</span><br><span class="line">  SyncLoopHook,</span><br><span class="line">  AsyncParallelHook,</span><br><span class="line">  AsyncParallelBailHook,</span><br><span class="line">  AsyncSeriesHook,</span><br><span class="line">  AsyncSeriesBailHook,</span><br><span class="line">  AsyncSeriesWaterfallHook</span><br><span class="line">&#125; = <span class="built_in">require</span>(<span class="string">'tapable'</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="Tapable用法"><a href="#Tapable用法" class="headerlink" title="Tapable用法"></a><a href="https://github.com/webpack/tapable" target="_blank" rel="noopener"><code>Tapable</code></a>用法</h3><ol>
+<li>新建钩子<code>new Hook();</code></li>
+<li>使用<code>tap/tapAsync/tapPromise</code>绑定钩子</li>
+<li><code>call/callAsync</code>执行绑定事件</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="keyword">const</span> hook1 = <span class="keyword">new</span> SyncHook([<span class="string">'arg1'</span>, <span class="string">'arg2'</span>, <span class="string">'arg3'</span>]);</span><br><span class="line"><span class="comment">// 2</span></span><br><span class="line">hook1.tap(<span class="string">'hook1'</span>, (arg1, arg2, arg3) =&gt; <span class="built_in">console</span>.log(arg1, arg2, arg3));</span><br><span class="line"><span class="comment">// 3</span></span><br><span class="line">hoo1.call(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); <span class="comment">// 1, 2, 3</span></span><br></pre></td></tr></table></figure>
+<p>举个例子</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123; SyncHook, AsyncParallelHook &#125; = <span class="built_in">require</span>(<span class="string">'tapable'</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.hooks = &#123;</span><br><span class="line">      accelerate: <span class="keyword">new</span> SyncHook([<span class="string">'newSpeed'</span>]),</span><br><span class="line">      <span class="keyword">break</span>: <span class="keyword">new</span> SyncHook(),</span><br><span class="line">      caculateRoutes: <span class="keyword">new</span> AsyncParallelHook([<span class="string">'source'</span>, <span class="string">'target'</span>, <span class="string">'routesList'</span>])</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> myCar = <span class="keyword">new</span> Car();</span><br><span class="line"></span><br><span class="line">myCar.hooks.break.tap(<span class="string">'WarningLampPlugin'</span>, () =&gt; <span class="built_in">console</span>.log(<span class="string">'WarningLampPlugin'</span>));</span><br><span class="line"></span><br><span class="line">myCar.hooks.accelerate.tap(<span class="string">'LoggerPlugin'</span>, newSpeed =&gt; <span class="built_in">console</span>.log(<span class="string">`Accelerate to <span class="subst">$&#123;newSpeed&#125;</span>`</span>));</span><br><span class="line"></span><br><span class="line">myCar.hooks.calculateRoutes.tapPromise(<span class="string">'calculateRoutes tapPromise'</span>, (source, target, routesList, callback) =&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, rejct</span>) =&gt;</span> &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">`tapPromise to <span class="subst">$&#123;source&#125;</span> <span class="subst">$&#123;target&#125;</span> <span class="subst">$&#123;routesList&#125;</span>`</span>);</span><br><span class="line">      resolve();</span><br><span class="line">    &#125;, <span class="number">1000</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">myCar.hooks.break.call();</span><br><span class="line">myCar.hooks.accelerate.call(<span class="string">'hello'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">console</span>.time(<span class="string">'cost'</span>);</span><br><span class="line"></span><br><span class="line">myCar.hooks.calculateRoutes.promise(<span class="string">'i'</span>, <span class="string">'love'</span>, <span class="string">'tapable'</span>).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.timeEnd(<span class="string">'cost'</span>);</span><br><span class="line">&#125;).catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.error(err);</span><br><span class="line">  <span class="built_in">console</span>.timeEnd(<span class="string">'cost'</span>);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="进阶一下"><a href="#进阶一下" class="headerlink" title="进阶一下"></a>进阶一下</h3><p>上面学习了<a href="https://github.com/webpack/tapable" target="_blank" rel="noopener"><code>Tapable</code></a>的用法，但它和<code>webpack/plugin</code>有什么关系呢？</p>
+<p>我们将刚才但代码稍作改动，拆成两个文件：<code>Compiler.js</code>、<code>MyPlugin.js</code>.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &#123;</span><br><span class="line">  SyncHook,</span><br><span class="line">  AsyncParallelHook</span><br><span class="line">&#125; = <span class="built_in">require</span>(<span class="string">'tapable'</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Compiler</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.hooks = &#123;</span><br><span class="line">      accelerate: <span class="keyword">new</span> SyncHook([<span class="string">'newSpeed'</span>]),</span><br><span class="line">      <span class="keyword">break</span>: <span class="keyword">new</span> SyncHook(),</span><br><span class="line">      calculateRoutes: <span class="keyword">new</span> AsyncParallelHook([<span class="string">'source'</span>, <span class="string">'target'</span>, <span class="string">'routesList'</span>])</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> plugins = options.plugins;</span><br><span class="line">    <span class="keyword">if</span> (plugins &amp;&amp; plugins.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      plugins.forEach(<span class="function"><span class="params">plugin</span> =&gt;</span> plugin.apply(<span class="keyword">this</span>));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  run() &#123;</span><br><span class="line">    <span class="built_in">console</span>.time(<span class="string">'cost'</span>);</span><br><span class="line">    <span class="keyword">this</span>.accelerate(<span class="string">'hello'</span>);</span><br><span class="line">    <span class="keyword">this</span>.break();</span><br><span class="line">    <span class="keyword">this</span>.caculateRoutes(<span class="string">'i'</span>, <span class="string">'love'</span>, <span class="string">'tapable'</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  accelerate(param) &#123;</span><br><span class="line">    <span class="keyword">this</span>.hooks.accelerate.call(param);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">break</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.hooks.break.call();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  calculateRoutes() &#123;</span><br><span class="line">    <span class="keyword">const</span> args = <span class="built_in">Array</span>.from(<span class="built_in">arguments</span>);</span><br><span class="line">    <span class="keyword">this</span>.hooks.calculateRoutes.callAsync(...args, err=&gt; &#123;</span><br><span class="line">      <span class="built_in">console</span>.time(<span class="string">'cost'</span>);</span><br><span class="line">      <span class="keyword">if</span> (err) <span class="built_in">console</span>.error(err);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = Compiler;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> Compiler = <span class="built_in">require</span>(<span class="string">'./Compiler'</span>);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyPlugin</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  apply(compiler) &#123;</span><br><span class="line">    compiler.hooks.break.tap(<span class="string">'WarningLampPlugin'</span>, () =&gt; <span class="built_in">console</span>.log(<span class="string">'WarningLampPlugin'</span>));</span><br><span class="line">    compiler.hooks.accelerate.tap(<span class="string">'LoggerPlugin'</span>, newSpeed =&gt; <span class="built_in">console</span>.log(<span class="string">`Accelerating to <span class="subst">$&#123;newSpeed&#125;</span>`</span>));</span><br><span class="line">    compiler.hooks.calculateRoutes.tapAsync(<span class="string">'calculateRoutes tapAsync'</span>, (source, target, routesList, callback) =&gt; &#123;</span><br><span class="line">      setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">`tapAsync to <span class="subst">$&#123;source&#125;</span> <span class="subst">$&#123;target&#125;</span> <span class="subst">$&#123;routesList&#125;</span>`</span>);</span><br><span class="line">        callback();</span><br><span class="line">      &#125;, <span class="number">2000</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> myPlugin = <span class="keyword">new</span> MyPlugin();</span><br><span class="line"><span class="keyword">const</span> options = &#123;</span><br><span class="line">  plugins: [myPlugin]</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> compiler = <span class="keyword">new</span> Compiler(options);</span><br><span class="line">compiler.run();</span><br></pre></td></tr></table></figure>
+<h2 id="Plugin基础"><a href="#Plugin基础" class="headerlink" title="Plugin基础"></a>Plugin基础</h2><p>webpack通过<code>plugin</code>机制让其更加灵活，以适应各种应用场景。在webpack运行的生命周期中会广播出许多事件，<code>plugin</code>可以监听这些事件，在合适的时机通过webpack提供的API改变输出结果。</p>
+<p>一个最基础的<code>plugin</code>的代码是这样的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PluginDemo</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;&#125;</span><br><span class="line"></span><br><span class="line">  apply(compiler) &#123;</span><br><span class="line">    compiler.hooks.compilation.tap(<span class="string">'PluginDemo'</span>, compilation =&gt; &#123;&#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = PluginDemo;</span><br></pre></td></tr></table></figure>
+<p>在使用这个<code>plugin</code>时，相关代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> PluginDemo = <span class="built_in">require</span>(<span class="string">'./PluginDemo'</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  plugins: [</span><br><span class="line">    <span class="keyword">new</span> PluginDemo(options);</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Compiler和Compilation"><a href="#Compiler和Compilation" class="headerlink" title="Compiler和Compilation"></a><code>Compiler</code>和<code>Compilation</code></h3><p>在开发<code>plugin</code>时最常用的两个对象就是<code>Compiler</code>和<code>Compilation</code>，它们是<code>Plugin</code>和webpack之间的桥梁。</p>
+<h4 id="Compiler"><a href="#Compiler" class="headerlink" title="Compiler"></a><code>Compiler</code></h4><p><code>Compiler</code>对象包含了webpack环境所有的配置信息，包含<code>options</code>，<code>loaders</code>，<code>plugins</code>等，这个对象在webpack启动的时候被实例化，它在全局是唯一的。</p>
+<h4 id="Compilation"><a href="#Compilation" class="headerlink" title="Compilation"></a><code>Compilation</code></h4><p><code>Compilation</code>对象包含了当前的模块资源、编译生成资源、变化的文件等。当webpack以开发模式运行时，每当检测到一个文件变化，一次新的<code>Compilation</code>将被创建。<code>Compilation</code>对象也提供了很多事件回调供插件做扩展。通过<code>Compilation</code>对象也可以读取到<code>Compiler</code>对象。</p>
+<p>它们的区别在于：<code>Compiler</code>代表了整个webpack从启动到关闭的生命周期，而<code>Compilation</code>只是代表了一次新的编译。</p>
+<h2 id="常用API"><a href="#常用API" class="headerlink" title="常用API"></a>常用API</h2><h2 id="Writing-a-Plugin"><a href="#Writing-a-Plugin" class="headerlink" title="Writing a Plugin"></a><a href="https://webpack.js.org/contribute/writing-a-plugin/#creating-a-plugin" target="_blank" rel="noopener">Writing a Plugin</a></h2>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/webpack/" rel="tag"># webpack</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/26/揭开redux和react-redux的神秘面纱/" rel="next" title="揭开redux和react-redux的神秘面纱(转)">
+                <i class="fa fa-chevron-left"></i> 揭开redux和react-redux的神秘面纱(转)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/28/深入浅出webpack-转/" rel="prev" title="深入浅出webpack(转)">
+                深入浅出webpack(转) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tapable是什么？"><span class="nav-number">1.</span> <span class="nav-text">Tapable是什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Tapable用法"><span class="nav-number">1.1.</span> <span class="nav-text">Tapable用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进阶一下"><span class="nav-number">1.2.</span> <span class="nav-text">进阶一下</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Plugin基础"><span class="nav-number">2.</span> <span class="nav-text">Plugin基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Compiler和Compilation"><span class="nav-number">2.1.</span> <span class="nav-text">Compiler和Compilation</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Compiler"><span class="nav-number">2.1.1.</span> <span class="nav-text">Compiler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Compilation"><span class="nav-number">2.1.2.</span> <span class="nav-text">Compilation</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用API"><span class="nav-number">3.</span> <span class="nav-text">常用API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Writing-a-Plugin"><span class="nav-number">4.</span> <span class="nav-text">Writing a Plugin</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

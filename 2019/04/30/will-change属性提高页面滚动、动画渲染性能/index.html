@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="css3,渲染性能,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="参考链接：  fix-scrolling-performance-css-will-change-property introduction-css-will-change-property MDN  问题引入最开始是为了解决一个滚动引起的性能问题：一个很大的元素，有一张视窗大小的背景图，使用background-attachment: fixed让它在滚动时一直处于可视区内，实现视觉差的效果。">
+<meta name="keywords" content="css3,渲染性能">
+<meta property="og:type" content="article">
+<meta property="og:title" content="will-change属性提高页面滚动、动画渲染性能(译)">
+<meta property="og:url" content="https://buptlyz.github.io/2019/04/30/will-change属性提高页面滚动、动画渲染性能/index.html">
+<meta property="og:site_name" content="沙雕爹爹">
+<meta property="og:description" content="参考链接：  fix-scrolling-performance-css-will-change-property introduction-css-will-change-property MDN  问题引入最开始是为了解决一个滚动引起的性能问题：一个很大的元素，有一张视窗大小的背景图，使用background-attachment: fixed让它在滚动时一直处于可视区内，实现视觉差的效果。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.fourkitchens.com/wp-content/uploads/2017/01/fourkitchens-frontpage-before_0.png">
+<meta property="og:image" content="https://www.fourkitchens.com/wp-content/uploads/2017/01/fourkitchens-frontpage-after_0.png">
+<meta property="og:updated_time" content="2019-08-13T07:54:29.918Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="will-change属性提高页面滚动、动画渲染性能(译)">
+<meta name="twitter:description" content="参考链接：  fix-scrolling-performance-css-will-change-property introduction-css-will-change-property MDN  问题引入最开始是为了解决一个滚动引起的性能问题：一个很大的元素，有一张视窗大小的背景图，使用background-attachment: fixed让它在滚动时一直处于可视区内，实现视觉差的效果。">
+<meta name="twitter:image" content="https://www.fourkitchens.com/wp-content/uploads/2017/01/fourkitchens-frontpage-before_0.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://buptlyz.github.io/2019/04/30/will-change属性提高页面滚动、动画渲染性能/">
+
+
+
+
+
+  <title>will-change属性提高页面滚动、动画渲染性能(译) | 沙雕爹爹</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">沙雕爹爹</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay foolish, stay humble.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://buptlyz.github.io/2019/04/30/will-change属性提高页面滚动、动画渲染性能/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="沙雕爹爹">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="沙雕爹爹">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">will-change属性提高页面滚动、动画渲染性能(译)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-04-30T09:48:09+08:00">
+                2019-04-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>参考链接：</p>
+<ul>
+<li><a href="https://www.fourkitchens.com/blog/article/fix-scrolling-performance-css-will-change-property/" target="_blank" rel="noopener">fix-scrolling-performance-css-will-change-property</a></li>
+<li><a href="https://www.sitepoint.com/introduction-css-will-change-property/" target="_blank" rel="noopener">introduction-css-will-change-property</a></li>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/CSS/will-change" target="_blank" rel="noopener">MDN</a></li>
+</ul>
+<h2 id="问题引入"><a href="#问题引入" class="headerlink" title="问题引入"></a>问题引入</h2><p>最开始是为了解决一个滚动引起的性能问题：一个很大的元素，有一张视窗大小的背景图，使用<code>background-attachment: fixed</code>让它在滚动时一直处于可视区内，实现<em>视觉差</em>的效果。</p>
+<h3 id="fixed带来的问题"><a href="#fixed带来的问题" class="headerlink" title="fixed带来的问题"></a><code>fixed</code>带来的问题</h3><p>使用<code>background-attachment: fixed</code>会导致每次用户滚动时都会引发绘制操作。为什么？页面需要重新定位内容，但它的背景图却应该仍在原来的位置不动，浏览器必须在相对于它实际DOM元素的新的位置上重绘。这是个很大的性能问题。</p>
+<h3 id="诊断问题"><a href="#诊断问题" class="headerlink" title="诊断问题"></a>诊断问题</h3><p>使用<em>Chrome DevTools</em>来查看<em>Frame</em>的绘制性能。</p>
+<p>优化前：</p>
+<p><img src="https://www.fourkitchens.com/wp-content/uploads/2017/01/fourkitchens-frontpage-before_0.png" alt="优化前"></p>
+<p>优化后：</p>
+<p><img src="https://www.fourkitchens.com/wp-content/uploads/2017/01/fourkitchens-frontpage-after_0.png" alt="优化后"></p>
+<h3 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h3><p>使用<code>will-change</code>属性。</p>
+<p>原始的CSS：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.what-we-do-cards</span> &#123;</span><br><span class="line">  @<span class="keyword">include</span> clearfix;</span><br><span class="line">  <span class="attribute">border-top</span>: <span class="number">10px</span> solid rgba(<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>, .<span class="number">46</span>);</span><br><span class="line">  <span class="attribute">background-color</span>: white;</span><br><span class="line">  <span class="attribute">background</span>: url(<span class="string">'/img/front/strategy.jpg'</span>) no-repeat center center;</span><br><span class="line">  <span class="attribute">background-attachment</span>: fixed;</span><br><span class="line">  <span class="attribute">background-size</span>: cover;</span><br><span class="line">  <span class="attribute">color</span>: <span class="variable">$white</span>;</span><br><span class="line">  <span class="attribute">padding-bottom</span>: <span class="number">4em</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们的背景图片使用了两个<em>GPU</em>敏感的CSS特性：<code>background-size: cover</code>和<code>background-attachment: fixed</code>。</p>
+<p>GPU友好的CSS：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.what-we-do-cards</span> &#123;</span><br><span class="line">  @<span class="keyword">include</span> clearfix;</span><br><span class="line">  <span class="attribute">border-top</span>: <span class="number">10px</span> solid rgba(<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>, .<span class="number">46</span>);</span><br><span class="line">  <span class="attribute">color</span>: <span class="variable">$white</span>;</span><br><span class="line">  <span class="attribute">padding-bottom</span>: <span class="number">4em</span>;</span><br><span class="line">  <span class="attribute">overflow</span>: hidden; <span class="comment">// added for pseudo-element</span></span><br><span class="line">  <span class="attribute">position</span>: relative; <span class="comment">// added for pseudo-element</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Fixed-position background image</span></span><br><span class="line">  &amp;::before &#123;</span><br><span class="line">    <span class="attribute">content</span>: <span class="string">' '</span>;</span><br><span class="line">    <span class="attribute">position</span>: fixed; <span class="comment">// instead of background-attachment</span></span><br><span class="line">    <span class="attribute">width</span>: <span class="number">100%</span>;</span><br><span class="line">    <span class="attribute">height</span>: <span class="number">100%</span>;</span><br><span class="line">    <span class="attribute">top</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">left</span>: <span class="number">0</span>;</span><br><span class="line">    <span class="attribute">background-color</span>: white;</span><br><span class="line">    <span class="attribute">background</span>: url(<span class="string">'/img/front/strategy.jpg'</span>) no-repeat center center;</span><br><span class="line">    <span class="attribute">background-size</span>: cover;</span><br><span class="line">    will-change: transform; <span class="comment">// creates a new paint layer</span></span><br><span class="line">    <span class="attribute">z-index</span>: -<span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最重要的部分是伪元素上的<code>will-change: transform</code>属性。这个属性的作用是跟浏览器说：“hi浏览器，这个元素在未来会改变，请在新的层绘制它，这样它的邻居不会影响它的绘制。“</p>
+<h2 id="深入will-change"><a href="#深入will-change" class="headerlink" title="深入will-change"></a>深入<code>will-change</code></h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>很多前端工程师依赖CSS3 <code>transitions</code>，<code>transforms</code>和<code>animations</code>来增加新的层，现在我们只使用少量的CSS就可以实现顺畅漂亮的动画。如果你用过这些CSS属性，你很可能已经了解<code>CPU</code>，<code>GPU</code>和硬件加速了。下面我们快速过一下这些概念：</p>
+<ul>
+<li>The CPU, or the Central Processing Unit, is the piece of hardware that processes pretty much every computer operation. It’s otherwise known as the motherboard.</li>
+<li>The GPU, or the Graphics Processing Unit, is the piece of hardware associated with processing and rendering graphics. The GPU is designed to perform complex graphical computations and offloads some serious process weight from the CPU.</li>
+<li>Hardware acceleration is a general term for offloading CPU processes onto another dedicated piece of hardware. In the world of CSS transitions, transforms, and animations, it implies that we’re offloading the process onto the GPU, and hence speeding it up. This occurs by pushing the element to a layer of its own, where it can be rendered independently while undergoing its animation.</li>
+</ul>
+<p>它是怎么提高性能和动画质量的呢？在基于<code>webkit</code>的浏览器中，当执行一下CSS操作时，经常会看到闪烁，即2D <code>transform</code>和<code>animation</code>。我们需要欺骗浏览器，让它把这些操作当作3D来执行，这样就可以把这些操作从CPU转移到GPU上做计算。因为3D的计算会自动放到GPU上。</p>
+<h3 id="什么是will-change？"><a href="#什么是will-change？" class="headerlink" title="什么是will-change？"></a>什么是<code>will-change</code>？</h3><p>CSS 属性 <code>will-change</code> 为web开发者提供了一种告知浏览器该元素会有哪些变化的方法，这样浏览器可以在元素属性真正发生变化之前提前做好对应的优化准备工作。 这种优化可以将一部分复杂的计算工作提前准备好，使页面的反应更为快速灵敏。</p>
+<p>用好这个属性并不是很容易：</p>
+<ul>
+<li><p><strong>不要将 <code>will-change</code> 应用到太多元素上：</strong>浏览器已经尽力尝试去优化一切可以优化的东西了。有一些更强力的优化，如果与 <code>will-change</code> 结合在一起的话，有可能会消耗很多机器资源，如果过度使用的话，可能导致页面响应缓慢或者消耗非常多的资源。</p>
+</li>
+<li><p><strong>有节制地使用：</strong>通常，当元素恢复到初始状态时，浏览器会丢弃掉之前做的优化工作。但是如果直接在样式表中显式声明了 <code>will-change</code> 属性，则表示目标元素可能会经常变化，浏览器会将优化工作保存得比之前更久。所以最佳实践是当元素变化之前和之后通过脚本来切换 <code>will-change</code> 的值。</p>
+</li>
+<li><p><strong>不要过早应用 <code>will-change</code> 优化：</strong>如果你的页面在性能方面没什么问题，则不要添加 <code>will-change</code> 属性来榨取一丁点的速度。 <code>will-change</code> 的设计初衷是作为最后的优化手段，用来尝试解决现有的性能问题。它不应该被用来预防性能问题。过度使用 <code>will-change</code> 会导致大量的内存占用，并会导致更复杂的渲染过程，因为浏览器会试图准备可能存在的变化过程。这会导致更严重的性能问题。</p>
+</li>
+<li><p><strong>给它足够的工作时间：</strong>这个属性是用来让页面开发者告知浏览器哪些属性可能会变化的。然后浏览器可以选择在变化发生前提前去做一些优化工作。所以给浏览器一点时间去真正做这些优化工作是非常重要的。使用时需要尝试去找到一些方法提前一定时间获知元素可能发生的变化，然后为它加上 <code>will-change</code> 属性。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>定义</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初始值</td>
+<td>auto</td>
+</tr>
+<tr>
+<td>适用元素</td>
+<td>all elements</td>
+</tr>
+<tr>
+<td>是否是继承属性</td>
+<td>否</td>
+</tr>
+<tr>
+<td>适用媒体</td>
+<td>all</td>
+</tr>
+<tr>
+<td>计算值</td>
+<td>as specified</td>
+</tr>
+<tr>
+<td>Animation type</td>
+<td>discrete</td>
+</tr>
+<tr>
+<td>正规顺序</td>
+<td>the unique non-ambiguous order defined by the formal grammar</td>
+</tr>
+</tbody>
+</table>
+<h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><blockquote>
+<p>标准语法: <code>auto</code> | <code>&lt;animateable-feature&gt;</code><br>其中<br><code>&lt;animateable-feature&gt; = scroll-position | contents | &lt;custom-ident&gt;</code></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">will-change: auto</span><br><span class="line">will-change: scroll-position</span><br><span class="line">will-change: contents</span><br><span class="line">will-change: transform        // Example of <span class="tag">&lt;<span class="name">custom-ident</span></span></span><br><span class="line">will-change: opacity          // Example of &lt;custom-ident&gt;</span><br><span class="line">will-change: left, top        // Example of two <span class="tag">&lt;<span class="name">animateable-feature</span>&gt;</span></span><br><span class="line"></span><br><span class="line">will-change: unset</span><br><span class="line">will-change: initial</span><br><span class="line">will-change: inherit</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h4 id="取值"><a href="#取值" class="headerlink" title="取值"></a>取值</h4><p><code>auto</code><br>表示没有特别指定哪些属性会变化，浏览器需要自己去猜，然后使用浏览器经常使用的一些常规方法优化。</p>
+<p><code>&lt;animateable-feature&gt;</code> 可以是以下值：</p>
+<p><code>scroll-position</code><br>表示开发者希望在不久后改变滚动条的位置或者使之产生动画。</p>
+<p><code>contents</code><br>表示开发者希望在不久后改变元素内容中的某些东西，或者使它们产生动画。</p>
+<p><code>&lt;custom-ident&gt;</code><br>表示开发者希望在不久后改变指定的属性名或者使之产生动画。如果属性名是简写，则代表所有与之对应的简写或者全写的属性。</p>
+<h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.sidebar</span> &#123;</span><br><span class="line">  <span class="attribute">will-change</span>: transform;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上示例在样式表中直接添加了 <code>will-change</code> 属性，会导致浏览器将对应的优化工作一直保存在内存中，这其实是不必要的，前面我们已经看过为什么应该避免这样的做法。下面是另一个展示如何使用脚本正确地应用 <code>will-change</code> 属性的示例，在大部分的场景中，你都应该这样做。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> el = <span class="built_in">document</span>.getElementById(<span class="string">'element'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当鼠标移动到该元素上时给该元素设置 `will-change` 属性</span></span><br><span class="line">el.addEventListener(<span class="string">'mouseenter'</span>, hintBrowser);</span><br><span class="line"><span class="comment">// 当 CSS 动画结束后清除 `will-change` 属性</span></span><br><span class="line">el.addEventListener(<span class="string">'animationEnd'</span>, removeHint);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hintBrowser</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 填写上那些你知道的，会在 CSS 动画中发生改变的 CSS 属性名们</span></span><br><span class="line">  <span class="keyword">this</span>.style.willChange = <span class="string">'transform, opacity'</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">removeHint</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.style.willChange = <span class="string">'auto'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是，如果某个应用在按下键盘的时候会翻页，比如相册或者幻灯片一类的，它的页面很大很复杂，此时在样式表中写上 <code>will-change</code> 是合适的。这会使浏览器提前准备好过渡动画，当键盘按下的时候就能立即看到灵活轻快的动画。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.slide</span> &#123;</span><br><span class="line">  <span class="attribute">will-change</span>: transform;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/css3/" rel="tag"># css3</a>
+          
+            <a href="/tags/渲染性能/" rel="tag"># 渲染性能</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/28/mac配置完ssh依然提示Enter-passphrase-for-key解决方法/" rel="next" title="mac配置完ssh依然提示Enter passphrase for key解决方法">
+                <i class="fa fa-chevron-left"></i> mac配置完ssh依然提示Enter passphrase for key解决方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/05/Function-Object/" rel="prev" title="Function && Object">
+                Function && Object <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">沙雕爹爹</p>
+              <p class="site-description motion-element" itemprop="description">Personal tech blog.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">45</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题引入"><span class="nav-number">1.</span> <span class="nav-text">问题引入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#fixed带来的问题"><span class="nav-number">1.1.</span> <span class="nav-text">fixed带来的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#诊断问题"><span class="nav-number">1.2.</span> <span class="nav-text">诊断问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解决问题"><span class="nav-number">1.3.</span> <span class="nav-text">解决问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#深入will-change"><span class="nav-number">2.</span> <span class="nav-text">深入will-change</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">2.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是will-change？"><span class="nav-number">2.2.</span> <span class="nav-text">什么是will-change？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#语法"><span class="nav-number">2.2.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#取值"><span class="nav-number">2.2.2.</span> <span class="nav-text">取值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#示例"><span class="nav-number">2.2.3.</span> <span class="nav-text">示例</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">沙雕爹爹</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
